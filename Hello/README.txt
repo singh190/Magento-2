@@ -1,0 +1,1 @@
+This is a simple example to create module in Magento-2.

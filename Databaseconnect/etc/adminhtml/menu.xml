@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- parent="Magento_Backend::content" : our menu item will be created under Content section of Magento core -->
+
+        <add id="Singh_Databaseconnect::main_menu"
+             title="Example Data"
+             module="Singh_Databaseconnect"
+             sortOrder="50"
+             resource="Singh_Databaseconnect::main_menu"/>
+
+        <add id="Singh_Databaseconnect::manage_data"
+             title="Manage Data"
+             module="Singh_Databaseconnect"
+             sortOrder="1"
+             parent="Singh_Databaseconnect::main_menu"
+             action="dataconnect/content/index"
+             resource="Singh_Databaseconnect::manage_data" />
+
+        <add id="Singh_Databaseconnect::add_record"
+             title="Add New Record"
+             module="Singh_Databaseconnect"
+             sortOrder="2"
+             parent="Singh_Databaseconnect::main_menu"
+             action="dataconnect/content/new"
+             resource="Singh_Databaseconnect::add_record" />
+
+        <add id="Singh_Databaseconnect::configuration"
+             title="Configurations"
+             module="Singh_Databaseconnect"
+             sortOrder="3"
+             parent="Singh_Databaseconnect::main_menu"
+             action="adminhtml/system_config/edit/section/datasection"
+             resource="Singh_Databaseconnect::configuration" />
+    </menu>
+</config>

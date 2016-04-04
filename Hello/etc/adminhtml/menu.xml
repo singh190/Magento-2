@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Singh_Hello::hello" title="Custom Menu" module="Singh_Hello" sortOrder="40" resource="Singh_Hello::hello"/>
+        <add id="Singh_Hello::hello_all" title="All Vendors" module="Singh_Hello" sortOrder="10" parent="Singh_Hello::hello" action="hello/index/" resource="Singh_Hello::all"/>
+        <add id="Singh_Hello::hello_new" title="New Vendors" module="Singh_Hello" sortOrder="30" parent="Singh_Hello::hello" action="hello/online/" resource="Singh_Hello::new"/>
+    </menu>
+</config>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <!-- defining acl for admin menu items -->
+                <resource id="Singh_Databaseconnect::main_menu" title="Example Data"
+                          sortOrder="50">
+                    <resource id="Singh_Databaseconnect::manage_data" title="Manage Data"
+                              sortOrder="1" />
+                    <resource id="Singh_Databaseconnect::add_record" title="Add New Record"
+                              sortOrder="2" />
+                    <resource id="Singh_Databaseconnect::configuration" title="Configurations"
+                              sortOrder="3" />
+                </resource>
+                <!-- defining acl for admin system configuration -->
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Singh_Databaseconnect::system_config"
+                                      title="Data Display Section" />
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

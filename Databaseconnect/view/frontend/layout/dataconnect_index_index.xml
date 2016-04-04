@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="3columns" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>
+            I'm the title of the page mentioned in layout of photon hello module.
+        </title>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Singh\Databaseconnect\Block\Databaseblock" name="database_data" template="datacontent.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

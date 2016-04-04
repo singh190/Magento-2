@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- parent="Magento_Backend::content" : our menu item will be created under Content section of Magento core -->
+
+        <add id="Singh_Grid::grid"
+             title="Example Grid"
+             module="Singh_Grid"
+             sortOrder="50"
+             resource="Singh_Grid::grid"/>
+
+        <add id="Singh_Grid::view"
+             title="View"
+             module="Singh_Grid"
+             sortOrder="1"
+             parent="Singh_Grid::grid"
+             action="grid/grid"
+             resource="Singh_Grid::grid" />
+
+        <add id="Singh_Grid::add_record"
+             title="Add New"
+             module="Singh_Grid"
+             sortOrder="2"
+             parent="Singh_Grid::grid"
+             action="grid/new"
+             resource="Singh_Grid::grid" />
+
+        <!--<add id="Singh_Grid::configuration"
+             title="Configurations"
+             module="Singh_Grid"
+             sortOrder="3"
+             parent="Singh_Grid::main_menu"
+             action="adminhtml/system_config/edit/section/datasection"
+             resource="Singh_Grid::configuration" />-->
+    </menu>
+</config>

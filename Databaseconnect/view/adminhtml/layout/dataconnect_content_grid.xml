@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- This file is used to declare the content of grid when you use ajax to reload the grid -->
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">
+    <update handle="formkey"/>
+    <update handle="dataconnect_content_grid_block"/>
+    <container name="root">
+        <block class="Magento\Backend\Block\Widget\Grid\Container"
+               name="singh_databaseconnect_datablock.grid.container"
+               template="Magento_Backend::widget/grid/container/empty.phtml"/>
+    </container>
+</layout>
