@@ -76,8 +76,6 @@ class Edit extends Action
 
         // 1. Get ID and create model
         $id = $this->getRequest()->getParam('grid_record_id');
-        var_dump($id);
-        die;
         $model = $this->_objectManager->create('Singh\Grid\Model\Grid');
 
         // 2. Initial checking
