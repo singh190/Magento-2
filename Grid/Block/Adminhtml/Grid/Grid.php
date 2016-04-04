@@ -9,6 +9,11 @@
 namespace Singh\Grid\Block\Adminhtml\Grid;
 
 use Magento\Backend\Block\Widget\Grid\Extended;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\Module\Manager;
+use Singh\Grid\Model\GridFactory;
+use Magento\Backend\Helper\Data;
+use Singh\Grid\Model\Status;
 
 class Grid extends Extended
 {
@@ -38,15 +43,15 @@ class Grid extends Extended
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
-        \Singh\Grid\Model\GridFactory $gridFactory,
-//        \Singh\Grid\Model\Status $status,
-        \Magento\Framework\Module\Manager $moduleManager,
+        Context $context,
+        Data $backendHelper,
+        GridFactory $gridFactory,
+        Status $status,
+        Manager $moduleManager,
         array $data = []
     ) {
         $this->_gridFactory = $gridFactory;
-//        $this->_status = $status;
+        $this->_status = $status;
         $this->moduleManager = $moduleManager;
         parent::__construct($context, $backendHelper, $data);
     }
@@ -126,17 +131,15 @@ class Grid extends Extended
             ]
         );
 
-
-       /* $this->addColumn(
+        $this->addColumn(
             'status',
             [
                 'header' => __('Status'),
                 'index' => 'status',
                 'type' => 'options',
-                'options' => $this->_status->getOptionArray()
+                'options' => $this->_status->toOptionArray()
             ]
-        );*/
-
+        );
 
         $this->addColumn(
             'edit',
