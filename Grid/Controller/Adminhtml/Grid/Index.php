@@ -9,7 +9,6 @@
 namespace Singh\Grid\Controller\Adminhtml\Grid;
 
 use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 
 class Index extends Action
@@ -24,7 +23,7 @@ class Index extends Action
      * @param PageFactory $resultPageFactory
      */
     public function __construct(
-        Context $context,
+        Action\Context $context,
         PageFactory $resultPageFactory
     ) {
         parent::__construct($context);
@@ -42,7 +41,7 @@ class Index extends Action
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Singh_Grid::grid');
         $resultPage->addBreadcrumb(__('CMS'), __('CMS'));
-        $resultPage->addBreadcrumb(__('Manage Webkul Grid View'), __('Manage Admin Grid View'));
+        $resultPage->addBreadcrumb(__('Manage Admin Grid View'), __('Manage Admin Grid View'));
         $resultPage->getConfig()->getTitle()->prepend(__('Manage Admin Grid'));
 
         return $resultPage;

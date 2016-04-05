@@ -6,7 +6,7 @@
  * Time: 6:27 PM
  */
 
-namespace Singh\Controller\Adminhtml\Grid;
+namespace Singh\Grid\Controller\Adminhtml\Grid;
 
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Backend\App\Action;
@@ -73,7 +73,6 @@ class Edit extends Action
      */
     public function execute()
     {
-
         // 1. Get ID and create model
         $id = $this->getRequest()->getParam('grid_record_id');
         $model = $this->_objectManager->create('Singh\Grid\Model\Grid');

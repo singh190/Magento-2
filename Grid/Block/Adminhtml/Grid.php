@@ -39,16 +39,11 @@ class Grid extends Container
      */
     protected function _prepareLayout()
     {
-
-        $addButtonProps = [
-            'id' => 'add_new_grid',  //button id
+        $this->buttonList->add('add_new',[
             'label' => __('Add New'),  //button label
             'class' => 'add',
-            'button_class' => '',
-            'class_name' => 'Magento\Backend\Block\Widget\Button\SplitButton',
-            'options' => $this->_getAddButtonOptions(),
-        ];
-        $this->buttonList->add('add_new', $addButtonProps);
+            'onclick' => "setLocation('" . $this->_getCreateUrl() . "')"
+        ]);
 
         $this->setChild(
             'grid',
@@ -56,23 +51,7 @@ class Grid extends Container
         );      // for grid file/view
         return parent::_prepareLayout();
     }
-
-    /**
-     *
-     *
-     * @return array
-     */
-    protected function _getAddButtonOptions()
-    {
-
-        $splitButtonOptions[] = [
-            'label' => __('Add New'),
-            'onclick' => "setLocation('" . $this->_getCreateUrl() . "')"
-        ];
-
-        return $splitButtonOptions;
-    }
-
+    
     /**
      *
      *
