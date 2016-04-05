@@ -8,47 +8,10 @@
 
 namespace Singh\Grid\Controller\Adminhtml\Grid;
 
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Backend\App\Action;
-use Magento\Framework\Registry;
+use Singh\Grid\Controller\Adminhtml\Grid;
 
-class Edit extends Action
+class Edit extends Grid
 {
-    /**
-     * Core registry
-     *
-     * @var \Magento\Framework\Registry
-     */
-    protected $_coreRegistry = null;
-
-    /**
-     * @var \Magento\Framework\View\Result\PageFactory
-     */
-    protected $resultPageFactory;
-
-    /**
-     * @param Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Framework\Registry $registry
-     */
-    public function __construct(
-        Action\Context $context,
-        PageFactory $resultPageFactory,
-        Registry $registry
-    ) {
-        $this->resultPageFactory = $resultPageFactory;
-        $this->_coreRegistry = $registry;
-        parent::__construct($context);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _isAllowed()
-    {
-        return true;
-    }
-
     /**
      * Init actions
      *
@@ -96,7 +59,7 @@ class Edit extends Action
         }
 
         // 4. Register model to use later in blocks
-        $this->_coreRegistry->register('singh_form_data', $model);
+        $this->resultRegistry->register('singh_form_data', $model);
 
         // 5. Build edit form
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */

@@ -8,53 +8,30 @@
 
 namespace Singh\Grid\Controller\Adminhtml\Grid;
 
-use Magento\Backend\App\Action;
-use Singh\Grid\Model\GridFactory;
-use Magento\Framework\View\Result\PageFactory;
+use Singh\Grid\Controller\Adminhtml\Grid;
 
-class Save extends Action
+class Save extends Grid
 {
-    /**
-     * @var PageFactory
-     */
-    protected $resultPageFactory;
-    protected $_gridFactory;
-
-    /**
-     * @param Context $context
-     * @param PageFactory $resultPageFactory
-     */
-    public function __construct(
-        Action\Context $context,
-        PageFactory $resultPageFactory,
-        GridFactory $gridFactory
-    ) {
-        parent::__construct($context);
-        $this->resultPageFactory = $resultPageFactory;
-        $this->_gridFactory = $gridFactory;
-    }
-
-    /**
-     * Index action
-     *
-     * @return void
-     */
     public function execute()
     {
-        $resultRedirect = $this->resultRedirectFactory->create();
-        $redirectBack = $this->getRequest()->getParam('back', false);
         $gridId = $this->getRequest()->getParam('grid_record_id');
+        //for save-continue and save-new action;
+        $redirectBack = $this->getRequest()->getParam('back', false);
+        $resultRedirect = $this->resultRedirectFactory->create();
         $data = $this->getRequest()->getPostValue();
         if ($data){
+            //unset data variable
             try{
-
-                $gridModel = $this->_gridFactory->create();
-                //if got grid id; load it
+                $gridModel = $this->_gridFactory->create();                
+                //if post has grid id; load it
                 if ($gridId)
-                    $gridModel->load($gridId);
+                    $gridModel->load($gridId);                
                 //set values to model
                 $formData = $this->getRequest()->getParam('page');
-                $gridModel->setData($formData);
+//                unset($formData['grid_record_id']);
+                
+                $gridModel->addData($formData)->save();
+                $gridId = $gridModel->getId();
                 $this->messageManager->addSuccess(__('Grid record is saved.'));
 
             }catch (\Magento\Framework\Exception\LocalizedException $e) {
@@ -67,21 +44,21 @@ class Save extends Action
                 $this->_session->setFormData($data);
                 $redirectBack = $gridId ? true : 'new';
             }
-        }else {
-            $resultRedirect->setPath('grid/*/', ['id' => 'grid_record_id']);
+        } else {
+            $resultRedirect->setPath('grid/*/', ['id' => $gridId]);
             $this->messageManager->addError('No data to save');
-//            return $resultRedirect;
+            return $resultRedirect;
         }
         if ($redirectBack === 'new') {
-            $resultRedirect->setPath('grid/*/newaction');
-        }elseif ($redirectBack) {
+            $resultRedirect->setPath('grid/*/new');
+        } elseif ($redirectBack === 'edit') {
             $resultRedirect->setPath(
                 'grid/*/edit',
-                ['id' => $gridId]
+                ['id' => $gridId, '_current' => true]
             );
         } else {
             $resultRedirect->setPath('grid/*/');
         }
-//        return $resultRedirect;
+        return $resultRedirect;
     }
 }

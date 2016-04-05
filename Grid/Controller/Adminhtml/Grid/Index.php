@@ -8,33 +8,10 @@
 
 namespace Singh\Grid\Controller\Adminhtml\Grid;
 
-use Magento\Backend\App\Action;
-use Magento\Framework\View\Result\PageFactory;
+use Singh\Grid\Controller\Adminhtml\Grid;
 
-class Index extends Action
+class Index extends Grid
 {
-    /**
-     * @var PageFactory
-     */
-    protected $resultPageFactory;
-
-    /**
-     * @param Context $context
-     * @param PageFactory $resultPageFactory
-     */
-    public function __construct(
-        Action\Context $context,
-        PageFactory $resultPageFactory
-    ) {
-        parent::__construct($context);
-        $this->resultPageFactory = $resultPageFactory;
-    }
-
-    /**
-     * Index action
-     *
-     * @return void
-     */
     public function execute()
     {
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
