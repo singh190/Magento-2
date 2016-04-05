@@ -71,6 +71,7 @@ class Main extends Generic implements TabInterface
         $form = $this->_formFactory->create();
 
         $form->setHtmlIdPrefix('page_');
+        $form->setFieldNameSuffix('page');
 
         $fieldset = $form->addFieldset('base_fieldset', ['legend' => __('Grid Information')]);
 
