@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * xml for declaring ui component file ; blog_post_listing
+ * this file to be created at ui_component/
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="styles"/>
+    <body>
+        <referenceContainer name="content">
+            <uiComponent name="uigrid_listing"/>
+        </referenceContainer>
+    </body>
+</page>

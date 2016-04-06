@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- parent="Magento_Backend::content" : our menu item will be created under Content section of Magento core -->
+        <!-- action = frontname / controller name -->
+        <!-- resource = module::unique name; used in acl for backend system -->
+
+        <add id="Singh_uigrid::grid"
+             title="Example Grid"
+             module="Singh_Uigrid"
+             sortOrder="50"
+             resource="Singh_Uigrid::grid"/>
+
+        <add id="Singh_Uigrid::view"
+             title="View"
+             module="Singh_Uigrid"
+             sortOrder="1"
+             parent="Singh_Uigrid::grid"
+             action="uigrid/grid"
+             resource="Singh_Uigrid::view" />
+
+        <add id="Singh_Uigrid::add_record"
+             title="Add New"
+             module="Singh_Uigrid"
+             sortOrder="2"
+             parent="Singh_Uigrid::grid"
+             action="uigrid/new"
+             resource="Singh_Uigrid::add" />
+    </menu>
+</config>
