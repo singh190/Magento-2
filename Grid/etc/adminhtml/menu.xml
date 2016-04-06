@@ -15,7 +15,7 @@
              sortOrder="1"
              parent="Singh_Grid::grid"
              action="grid/grid"
-             resource="Singh_Grid::grid" />
+             resource="Singh_Grid::view" />
 
         <add id="Singh_Grid::add_record"
              title="Add New"
@@ -23,7 +23,7 @@
              sortOrder="2"
              parent="Singh_Grid::grid"
              action="grid/new"
-             resource="Singh_Grid::grid" />
+             resource="Singh_Grid::add" />
 
         <!--<add id="Singh_Grid::configuration"
              title="Configurations"
