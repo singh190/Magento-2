@@ -202,6 +202,7 @@
         <column name="membership">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
+                    <item name="options" xsi:type="object">Ashsmith\Blog\Model\Post\Source\IsActive</item>
                     <item name="filter" xsi:type="string">select</item>
                     <item name="editor" xsi:type="array">
                         <item name="editorType" xsi:type="string">select</item>
@@ -234,6 +235,7 @@
         <column name="country">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
+                    <item name="options" xsi:type="object">Ashsmith\Blog\Model\Post\Source\IsActive</item>
                     <item name="filter" xsi:type="string">select</item>
                     <item name="editor" xsi:type="array">
                         <item name="validation" xsi:type="array">
