@@ -8,43 +8,14 @@
 
 namespace Singh\Uigrid\Controller\Adminhtml\Grid;
 
-use Magento\Backend\App\Action;
-
-class Edit extends Action
-{
-    /**
-     * Core registry
-     *
-     * @var \Magento\Framework\Registry
-     */
-    protected $_coreRegistry = null;
-
-    /**
-     * @var \Magento\Framework\View\Result\PageFactory
-     */
-    protected $resultPageFactory;
-
-    /**
-     * @param Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Framework\Registry $registry
-     */
-    public function __construct(
-        Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Registry $registry
-    ) {
-        $this->resultPageFactory = $resultPageFactory;
-        $this->_coreRegistry = $registry;
-        parent::__construct($context);
-    }
-
+class Edit extends \Singh\Uigrid\Controller\Adminhtml\Grid
+{   
     /**
      * {@inheritdoc}
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Singh_Uigrid::save');
+        return $this->_authorization->isAllowed('Singh_Uigrid::grid');
     }
 
     /**
@@ -72,7 +43,7 @@ class Edit extends Action
     public function execute()
     {
         $id = $this->getRequest()->getParam('entity_id');
-        $model = $this->_objectManager->create('Singh\Grid\Model\Grid');
+        $model = $this->_gridFactory;
 
         // 2. Initial checking
         if ($id) {
@@ -93,7 +64,7 @@ class Edit extends Action
         }
 
         // 4. Register model to use later in blocks
-        $this->_coreRegistry->register('singh_form_data', $model);
+        $this->resultRegistry->register('singh_form_data', $model);
 
         // 5. Build edit form
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */

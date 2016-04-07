@@ -5,7 +5,7 @@
         <!-- action = frontname / controller name -->
         <!-- resource = module::unique name; used in acl for backend system -->
 
-        <add id="Singh_uigrid::grid"
+        <add id="Singh_Uigrid::grid"
              title="Example Grid"
              module="Singh_Uigrid"
              sortOrder="50"

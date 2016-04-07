@@ -8,10 +8,9 @@
 
 namespace Singh\Uigrid\Controller\Adminhtml\Grid;
 
-use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
 
-class Delete extends \Magento\Backend\App\Action
+class Delete extends \Singh\Uigrid\Controller\Adminhtml\Grid
 {
 
     /**
@@ -19,7 +18,7 @@ class Delete extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Singh_Uigrid::delete');
+        return $this->_authorization->isAllowed('Singh_Uigrid::grid');
     }
 
     /**
@@ -34,7 +33,7 @@ class Delete extends \Magento\Backend\App\Action
         $resultRedirect = $this->resultRedirectFactory->create();
         if ($id) {
             try {
-                $model = $this->_objectManager->create('Singh\Grid\Model\Grid');
+                $model = $this->_gridFactory;
                 $model->load($id);
                 $model->delete();
                 $this->messageManager->addSuccess(__('The post has been deleted.'));

@@ -8,26 +8,17 @@
 
 namespace Singh\Uigrid\Controller\Adminhtml\Grid;
 
-use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
 
-class Save extends \Magento\Backend\App\Action
+class Save extends \Singh\Uigrid\Controller\Adminhtml\Grid
 {
-
-    /**
-     * @param Action\Context $context
-     */
-    public function __construct(Action\Context $context)
-    {
-        parent::__construct($context);
-    }
-
     /**
      * {@inheritdoc}
+     * check if allowed in admin resource
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Singh_Uigrid::save');
+        return $this->_authorization->isAllowed('Singh_Uigrid::grid');
     }
 
     /**
@@ -38,43 +29,51 @@ class Save extends \Magento\Backend\App\Action
     public function execute()
     {
         $data = $this->getRequest()->getPostValue();
+        $id = $this->getRequest()->getParam('entity_id');
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
+        $redirectBack = $this->getRequest()->getParam('back', false);
         if ($data) {
-            /** @var \Ashsmith\Blog\Model\Post $model */
-            $model = $this->_objectManager->create('Singh\Grid\Model\Grid');
-
-            $id = $this->getRequest()->getParam('entity_id');
-            if ($id) {
-                $model->load($id);
-            }
-
-            $model->setData($data);
-
-            $this->_eventManager->dispatch(
-                'uigrid_prepare_save',
-                ['uigrid' => $model, 'request' => $this->getRequest()]
-            );
-
             try {
-                $model->save();
-                $this->messageManager->addSuccess(__('You saved this Post.'));
-                $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
-                if ($this->getRequest()->getParam('back')) {
-                    return $resultRedirect->setPath('*/*/edit', ['entity_id' => $model->getId(), '_current' => true]);
+//                $uigridModel = $this->_objectManager->create('Singh\Uigrid\Model\Grid');
+                $uigridModel = $this->_gridFactory;
+                if ($id) {
+                    $uigridModel->load($id);
                 }
-                return $resultRedirect->setPath('*/*/');
+                $uigridModel->setData($data);
+                /*$this->_eventManager->dispatch(
+                    'uigrid_prepare_save',
+                    ['uigrid' => $uigridModel, 'request' => $this->getRequest()]
+                );*/
+                $uigridModel->save();
+                $id = $uigridModel->getId();
+                $this->messageManager->addSuccess(__('Grid record is saved.'));
+
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
                 $this->messageManager->addError($e->getMessage());
-            } catch (\RuntimeException $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->_session->setFormData($data);
+                $redirectBack = $id ? true : 'new';
             } catch (\Exception $e) {
-                $this->messageManager->addException($e, __('Something went wrong while saving the post.'));
+                $this->_objectManager->get('Psr\Log\LoggerInterface')->critical($e);
+                $this->messageManager->addError($e->getMessage());
+                $this->_session->setFormData($data);
+                $redirectBack = $id ? true : 'new';
             }
-
-            $this->_getSession()->setFormData($data);
-            return $resultRedirect->setPath('*/*/edit', ['entity_id' => $this->getRequest()->getParam('entity_id')]);
+        }else {
+            $resultRedirect->setPath('uigrid/*/', ['entity_id' => $id]);
+            $this->messageManager->addError('No data to save');
+            return $resultRedirect;
         }
-        return $resultRedirect->setPath('*/*/');
+        if ($redirectBack === 'new') {
+            $resultRedirect->setPath('uigrid/*/new');
+        } elseif ($redirectBack === 'edit') {
+            $resultRedirect->setPath(
+                'uigrid/*/edit',
+                ['entity_id' => $id, '_current' => true]
+            );
+        } else {
+            $resultRedirect->setPath('uigrid/*/');
+        }
+        return $resultRedirect;
     }
 }
