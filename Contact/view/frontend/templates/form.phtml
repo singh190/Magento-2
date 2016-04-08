@@ -18,25 +18,28 @@
         <div class="field note no-label"><?php /* @escapeNotVerified */ echo __('Our helpful team of trained professionals is here to answer your questions.
             Fill in your information, as well as a little bit about the questions you have,
             and we’ll respond as soon as we can with information to help.') ?></div>
-        <div class="field name required">
-            <label class="label" for="name"><span><?php /* @escapeNotVerified */ echo __('indicates a required field') ?></span></label>
+        <!--        <div class="field name">-->
+        <!--        <label class="label" for="name"><span>--><?php ///* @escapeNotVerified */ echo __('indicates a required field') ?><!--</span></label>-->
+        <!--        </div>-->
+        <div class="mandatory">
+            <sup>*</sup><label class="label" for="name"><span><?php /* @escapeNotVerified */ echo __('indicates a required field') ?></span></label>
         </div>
         <div class="field name required">
             <label class="label" for="firstname"><span><?php /* @escapeNotVerified */ echo __('First Name') ?></span></label>
             <div class="control">
-                <input name="name" id="firstname" title="<?php /* @escapeNotVerified */ echo __('First Name') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getUserFirstName()) ?>" class="input-text" type="text" data-validate="{required:true}"/>
+                <input name="name" id="firstname" title="<?php /* @escapeNotVerified */ echo __('First Name') ?>" value="<?php echo $block->escapeHtml($this->helper('Singh\Contact\Helper\Data')->getUserFirstName()) ?>" class="input-text" type="text" data-validate="{required:true}"/>
             </div>
         </div>
         <div class="field name required">
             <label class="label" for="lastname"><span><?php /* @escapeNotVerified */ echo __('Last Name') ?></span></label>
             <div class="control">
-                <input name="name" id="lastname" title="<?php /* @escapeNotVerified */ echo __('Last Name') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getUserLastName()) ?>" class="input-text" type="text" data-validate="{required:true}"/>
+                <input name="name" id="lastname" title="<?php /* @escapeNotVerified */ echo __('Last Name') ?>" value="<?php echo $block->escapeHtml($this->helper('Singh\Contact\Helper\Data')->getUserLastName()) ?>" class="input-text" type="text" data-validate="{required:true}"/>
             </div>
         </div>
         <div class="field email required">
             <label class="label" for="email"><span><?php /* @escapeNotVerified */ echo __('Email') ?></span></label>
             <div class="control">
-                <input name="email" id="email" title="<?php /* @escapeNotVerified */ echo __('Email') ?>" value="<?php echo $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}"/>
+                <input name="email" id="email" title="<?php /* @escapeNotVerified */ echo __('Email') ?>" value="<?php echo $block->escapeHtml($this->helper('Singh\Contact\Helper\Data')->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}"/>
             </div>
         </div>
         <div class="field telephone">
