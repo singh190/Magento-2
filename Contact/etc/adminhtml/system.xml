@@ -35,6 +35,18 @@
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                 </field>
             </group>
+            <group id="cw_email" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>CW Contact Us Email Options</label>
+                <field id="cw_ccrh_email" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Comments; Complaints &amp; Resolution Hotline</label>
+                    <validate>validate-email</validate>
+                </field>
+                <field id="cw_firjo_email" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>For inquiries regarding job openings</label>
+                    <validate>validate-email</validate>
+                </field>
+
+            </group>
         </section>
     </system>
 </config>
