@@ -4,14 +4,58 @@
  * See COPYING.txt for license details.
  */
 
-// @codingStandardsIgnoreFile
-
 /* @var \Magento\Wishlist\Model\Item $item */
 $item = $block->getItem();
 $product = $item->getProduct();
-//$addedAt = $block->getA
+
+$schema = ($block->getZone() == 'item_view') ? true : false;
+$idSuffix = $block->getIdSuffix() ? $block->getIdSuffix() : '';
+$finalPriceModel = $product->getPriceInfo()->getPrice('regular_price');
 ?>
-<h3>ADDED <?php echo $block->getWishlistAddedAt($item->getAddedAt())?></h3>
-<a class="product-item-photo" href="<?php /* @escapeNotVerified */ echo $block->getProductUrl($item) ?>" title="<?php echo $block->escapeHtml($product->getName()) ?>">
-    <?php echo $block->getImage($product, 'wishlist_thumbnail')->toHtml(); ?>
-</a>
+<h3><?php echo __("ADDED ");
+    echo $block->getWishlistAddedAt($item->getAddedAt())?>
+</h3>
+<div class="wish-panel">
+    <div class="clearfix">
+        <div class="col-md-5 col-lg-5 WLL-panel">
+            <a class="product-item-photo" href="<?php /* @escapeNotVerified */ echo $block->getProductUrl($item) ?>" title="<?php echo $block->escapeHtml($product->getName()) ?>">
+                <?php echo $block->getImage($product, 'wishlist_thumbnail')->toHtml(); ?>
+            </a>
+            
+<!--            custom code to display product name, price and other details-->
+            <div class="col-md-7 col-lg-7 WLR-panel">
+<!--                product name-->
+                <h4>
+                    <a href="<?php /* @escapeNotVerified */ echo $block->getProductUrl($item) ?>" title="<?php echo $block->escapeHtml($product->getName()) ?>" class="product-item-link">
+                        <?php echo $block->escapeHtml($product->getName()) ?>
+                    </a>
+                </h4>
+<!--                product id-->
+                <p>
+                    <?php echo __("Catalog Item #: ") ?>
+                        <span>
+                            <?php echo $block->escapeHtml($product->getId()) ?>
+                        </span>
+                </p>
+<!--                product price-->
+                <div class="price clearfix">
+                    <div class="sale-left">
+                        SALE:
+<!--                        --><?php //echo $product->getPriceInfo()->getPrice('regular_price')->getAmount()->getValue(); ?>
+                        <?php /* @escapeNotVerified */ echo $block->render($finalPriceModel->getAmount(), [
+                            'display_label'     => __('Special Price'),
+                            'price_id'          => $block->getPriceId('product-price-' . $idSuffix),
+                            'price_type'        => 'finalPrice',
+                            'include_container' => true,
+                            'schema' => $schema
+                        ]); ?>
+<!--                        SALE $249.99<br>-->
+<!--                        <span class="price-off"><span>$349.99</span> SAVE XX%</span>-->
+                    </div>
+                </div>
+                <img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/account-management/star.png" alt="" />
+                <span class="review-count"> 37 reviews</span>
+            </div>
+        </div>
+    </div>
+</div>
