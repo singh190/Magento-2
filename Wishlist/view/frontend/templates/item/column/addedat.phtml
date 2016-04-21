@@ -1,0 +1,13 @@
+
+<?php
+/* @var \Magento\Wishlist\Model\Item $item */
+$item = $block->getItem();
+$product = $item->getProduct();
+?>
+
+<div class="singh_wishlist_addedat">
+    <h3>
+        <?php echo __("ADDED ");
+        echo $block->getWishlistAddedAt($item->getAddedAt())?>
+    </h3>
+</div>
