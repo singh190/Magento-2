@@ -1,0 +1,11 @@
+<?php
+$item = $block->getItem();
+$product = $item->getProduct();
+?>
+<!--get reviews-->
+<?php
+$reviewBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\View');
+
+//getting $product object, passed $product object inside function
+echo $reviewBlock->getReviewsSummaryHtml($product, Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW, true);
+?>
