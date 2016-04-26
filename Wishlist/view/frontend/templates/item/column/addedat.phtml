@@ -3,11 +3,104 @@
 /* @var \Magento\Wishlist\Model\Item $item */
 $item = $block->getItem();
 $product = $item->getProduct();
+$image = "";
+$image_big_url = '';
+$image_url = '';
+$image = $product->getResource ()->getAttribute ( 'skuPrimaryImage' )->getFrontend ()->getValue ( $product );
+if ($image) {
+    $image_aray = explode ( "/", $image );
+    $image_url = "https://images4.campingworld.com/CampingWorld/images/products/" . $image_aray [0] . "/425x425/" . strtolower ( $image_aray [1] );
+    $image_big_url = "https://images4.campingworld.com/CampingWorld/images/products/" . $image_aray [0] . "/1000x1000/" . strtolower ( $image_aray [1] );
+}
 ?>
-
-<div class="singh_wishlist_addedat">
+<div class="record-list">
     <h3>
         <?php echo __("ADDED ");
         echo $block->getWishlistAddedAt($item->getAddedAt())?>
     </h3>
+
+
+    <!--        div for product image-->
+    <div class="wish-panel">
+        <div class="clearfix">
+            <div class="col-md-5 col-lg-5 WLL-panel">
+                <?php if ($image) { ?>
+                    <a href='<?php echo $image_big_url ?>' class='cloud-zoom' id='zoom1' rel="adjustX:10, adjustY:-4">
+                        <img src="<?php echo $image_url ?>" alt='' title="<?php echo $product->getName(); ?>" />
+                    </a>
+                <?php } else { ?>
+                    <img
+                        src="http://images3.campingworld.com/CampingWorld/images/V2/CW/common/no-image.png"
+                        alt='No-Image' title="<?php echo $product->getName(); ?>" />
+                <?php } ?>
+            </div>
+            <div class="col-md-7 col-lg-7 WLR-panel">
+                <!-- display product name-->
+                <h4>
+                    <a href="<?php /* @escapeNotVerified */ echo $block->getProductUrl($item) ?>" title="<?php echo $block->escapeHtml($product->getName()) ?>" class="product-item-link">
+                        <?php echo $block->escapeHtml($product->getName()) ?>
+                    </a>
+                </h4>
+                <!-- display catalog item no.-->
+                <p>
+                    <?php echo __("Catalog Item #: "); ?>
+                    <span><?php $block->escapeHtml($product->getId()) ?></span>
+                </p>
+                <!-- display product price-->
+                <div class="price clearfix">
+                    <div class="sale-left">
+                        <?php
+                        $priceBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\ListProduct');
+                        //getting $product object, passed $product object inside function
+                        echo $priceBlock->getProductPrice($product);
+                        ?>
+                        <br>
+                        <span class="price-off">SAVE XX%</span>
+                    </div>
+                </div>
+                <!-- display reviews-->
+                <span class="review-count">
+                <?php
+                $reviewBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\View');
+                //getting $product object, passed $product object inside function
+                echo $reviewBlock->getReviewsSummaryHtml($product, Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW, true);
+                ?>
+            </span>
+            </div>
+        </div>
+        <div class="in-stock">
+            This Item is <span>In-Stock</span> and delivered to you by
+            <span>Monday, January 4th</span> for <span>$10</span>
+        </div>
+        <ul class="shoppinginfo clearfix">
+            <?php if ($product->getOnlineItem()): ?><li><a title="Online Only" href="javascript:void(0);"><img
+                        src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/list-view/online-only.png"
+                        alt="Online Only"></a></li><?php endif; ?>
+            <?php if ($product->getBuyMore()): ?><li><a title="Buy More Save More" href="javascript:void(0);"><img
+                        src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/list-view/save-more.png"
+                        alt="Buy More Save More"></a></li><?php endif; ?>
+            <?php if ($product->getNewItem()): ?> <li><a title="New Item" href="javascript:void(0);"><img
+                        src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/list-view/new-item.png"
+                        alt="New Item"></a></li><?php endif; ?>
+            <?php if (!$product->getSkuSpecialShip()): ?>
+                <li><a title="Free Shipping" href="javascript:void(0);"><img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/free.png" alt="Free Shipping"> </a></li>
+            <?php endif; ?>
+        </ul>
+        <!-- display add to cart-->
+        <div class="yellow-shadow">
+            <?php if ($product->isSaleable()): ?>
+                <div class="product-item-actions">
+                    <div class="">
+                        <button type="button" data-role="tocart" data-post='<?php /* @escapeNotVerified */ echo $block->getItemAddToCartParams($item)?>' title="<?php /* @escapeNotVerified */ echo __('Add to Cart') ?>" data-item-id="<?php /* @escapeNotVerified */ echo $item->getId()?>" class="">
+                            <span><?php /* @escapeNotVerified */ echo __('Add to Cart') ?></span>
+                        </button>
+                    </div>
+                </div>
+            <?php endif;?>
+        </div>
+    </div>
+    <!--for remove from wishlist-->
+    <a href="#" data-role="remove" data-post-remove='<?php /* @escapeNotVerified */ echo $block->getItemRemoveParams($block->getItem()); ?>' title="<?php /* @escapeNotVerified */ echo __('Remove Item') ?>" class="close_icon">
+        <span><?php /* @escapeNotVerified */ echo __('Remove item');?></span>
+    </a>    
 </div>

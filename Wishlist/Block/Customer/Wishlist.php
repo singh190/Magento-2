@@ -6,7 +6,7 @@
  * Time: 10:43
  */
 
-namespace Singh\Wishlist\Block\Customer;
+namespace Camping\Wishlist\Block\Customer;
 
 class Wishlist extends \Magento\Wishlist\Block\Customer\Wishlist{
 

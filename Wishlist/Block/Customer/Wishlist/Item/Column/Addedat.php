@@ -6,7 +6,7 @@
  * Time: 13:48
  */
 
-namespace Singh\Wishlist\Block\Customer\Wishlist\Item\Column;
+namespace Camping\Wishlist\Block\Customer\Wishlist\Item\Column;
 
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Catalog\Block\Product\Context;

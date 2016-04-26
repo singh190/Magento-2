@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <body>
+        <referenceBlock name="header.container" remove="true" />
+        <referenceBlock name="page.top" remove="true" />
+        <referenceContainer name="content">
+            <block class="Magento\Wishlist\Block\Customer\Wishlist" name="customer.wishlist" template="Camping_Wishlist::view.phtml" cacheable="false">
+                <block class="Magento\Wishlist\Block\Customer\Wishlist\Items" name="customer.wishlist.items" as="items" template="Camping_Wishlist::item/list.phtml" cacheable="false">
+                    <block class="Camping\Wishlist\Block\Customer\Wishlist\Item\Column\Addedat" name="camping.wishlist.item.addedat" template="item/column/addedat.phtml"/>
+                </block>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

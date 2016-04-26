@@ -5,52 +5,90 @@
  */
 
 // @codingStandardsIgnoreFile
+/** @var $block \Magento\Wishlist\Block\Customer\Wishlist\Button */
+$shareWishlistButtonBlock = $block->getLayout()->createBlock('Magento\Wishlist\Block\Customer\Wishlist\Button');
+$shareWishlistBlock = $block->getLayout()->createBlock('Magento\Wishlist\Block\Customer\Sharing');
 
 /* @var $block \Magento\Wishlist\Block\Customer\Wishlist */
 ?>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 acc-wishlist">
+    <div class="clearfix" id="wishlist-page">
+        <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()) : ?>
+            <div class="col-md-9 col-lg-9 wish-left">
+                <div class="wishlist-inner clearfix">
+                    <?php //echo $block->getChildHtml('top'); ?>
+                    <?php if ($block->hasWishlistItems()): ?>
+                        <!--            --><?php //echo $block->getBlockHtml('formkey');?>
+                        <?php $block->getChildBlock('items')->setItems($block->getWishlistItems()); ?>
+                        <?php echo $block->getChildHtml('items');?>
+                    <?php else: ?>
+                        <div class="message info empty"><span><?php /* @escapeNotVerified */ echo __('You have no items in your wish list.') ?></span></div>
+                    <?php endif ?>
+                </div>
+            </div>
 
-<?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()) : ?>
-<!--    --><?php //echo($block->getChildHtml('wishlist.rss.link'));?>
-    <form class="col-md-9 col-lg-9 wish-left" id="wishlist-view-form"
-          data-mage-init='{"wishlist":{
-          "addToCartUrl":<?php /* @escapeNotVerified */ echo $block->getItemAddToCartParams("%item%");?>,
-          "confirmRemoveMessage":"<?php /* @escapeNotVerified */ echo __("Are you sure you want to remove this product from your Wish List?") ?>",
-          "addAllToCartUrl":<?php /* @escapeNotVerified */ echo $block->getAddAllToCartParams(); ?>,
-          "commentString":""},
-          "validation": {}}' action="<?php /* @escapeNotVerified */ echo $block->getUrl('wishlist/index/update', ['wishlist_id' => $block->getWishlistInstance()->getId()]) ?>" method="post">
-        <?php echo $block->getChildHtml('top'); ?>
-        <?php if ($block->hasWishlistItems()): ?>
-            <?php echo $block->getBlockHtml('formkey');?>
-            <?php $block->getChildBlock('items')->setItems($block->getWishlistItems()); ?>
-            <?php echo $block->getChildHtml('items');?>
-        <?php else: ?>
-            <div class="message info empty"><span><?php /* @escapeNotVerified */ echo __('You have no items in your wish list.') ?></span></div>
+            <!-- code for displaying left side block-->
+            <!-- block for show wishlist; Private::Public-->
+            <div class="col-md-3 col-lg-3 wish-right">
+                <div class="select-private">
+                    <div class="custom-select">
+                        <select>
+                            <option>Private</option>
+                        </select>
+                        <span class="select-arrow1"></span>
+                    </div>
+                    <a href="#" title="Wish List Agreement">Wish List Agreement</a>
+                </div>
+                <!-- block for adding items to wishlist -->
+                <div class="add-itemto-list error">
+                    <label for="add">Add Item to List</label>
+                    <input id="add" type="text">
+                    <input title="Add" value="ADD" type="button">
+                    <span class="eror-msg">The item number you entered is invalid.  Please try again.</span>
+                </div>
+                <!--  block for global wishlist search-->
+                <div class="gobal-left-search">
+                    <label for="search">Search for a Wish List</label>
+                    <input id="search" placeholder="Search Wish List" type="text">
+                    <button title="Search"><img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/common/plp_search_icon.png"></button>
+                </div>
+                <!-- block for sharing wishlist-->
+                <?php if ($shareWishlistButtonBlock->getWishlist()->getItemsCount() && $shareWishlistButtonBlock->getWishlist()->getShared() < $shareWishlistButtonBlock->getConfig()->getSharingEmailLimit()): ?>
+                    <div class="share-email clearfix">
+                        <div class="share-inner clearfix">
+                            <form class="form wishlist share"
+                                  action="<?php /* @escapeNotVerified */ echo $shareWishlistBlock->getSendUrl() ?>"
+                                  id="form-validate"
+                                  method="post"
+                                  data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>"
+                                  data-mage-init='{"validation":{}}'>
+                                <fieldset class="fieldset">
+                                    <?php echo $shareWishlistBlock->getBlockHtml('formkey')?>
+                                    <div id="email-form">
+                                        <label for="email_address"><?php echo __("Email Address")?></label>
+                                        <div class="control">
+                                            <input type="text" name="emails"  id="email_address" data-validate="{required:true,'validate-emails':true}" value="<?php /* @escapeNotVerified */ echo $shareWishlistBlock->getEnteredData('emails') ?>">
+                                        </div>
+
+                                        <div class="yellow-shadow">
+                                            <button type="submit" title="<?php /* @escapeNotVerified */ echo __('Share Wish List') ?>" class="action submit primary">
+                                                <span><?php /* @escapeNotVerified */ echo __('Share Wish List') ?></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                            </form>
+
+                            <div class="email-send" style="display:none;">
+                                <img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/account-management/email.png" alt="Send Success">
+                                <p>Your Wish List has been sent to
+                                    <span>jane.smith@gmail.com</span>
+                                </p>
+                            </div>
+                        </div>
+                        <img alt="" class="btm-shadow" src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/shadow.png">
+                    </div>
+                <?php endif;?>
+            </div>
         <?php endif ?>
-        <?php echo $block->getChildHtml('bottom'); ?>
-        <div class="actions-toolbar">
-            <div class="primary">
-                <?php echo $block->getChildHtml('control_buttons');?>
-            </div>
-            <div class="secondary">
-                <a href="<?php echo $block->escapeUrl($block->getBackUrl()) ?>" class="action back">
-                    <span><?php /* @escapeNotVerified */ echo __('Back') ?></span>
-                </a>
-            </div>
-        </div>
-    </form>
-    <script id="form-tmpl" type="text/x-magento-template">
-      <form id="wishlist-hidden-form" method="post" action="<%- data.url %>" class="no-display">
-          <% if (data.qty) { %>
-          <input name="qty" value="<%- data.qty %>">
-          <% } %>
-          
-          <% if (data.item) { %>
-          <input name="item" value="<%- data.item %>">
-          <% } %>
-          
-          <% if (data.entity) { %>
-          <input name="entity" value="<%- data.entity %>">
-          <% } %>
-      </form>
-  </script>
-<?php endif ?>
+    </div>
+</div>
