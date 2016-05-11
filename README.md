@@ -9,3 +9,4 @@ use command: <br/>
 5> indexing: php bin/magento indexer:reindex/info/status. <br/>
 6> Install sample data: magento sample data:reset.
 7> Clear static content: bin/magento setup:static-content:deploy
+8> Db setup upgrade: bin/magento setup:db-schema:upgrade
