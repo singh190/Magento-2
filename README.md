@@ -7,6 +7,6 @@ use command: <br/>
 3> upgrade setup: php bin/magento setup:upgrade. <br/>
 4> compile setup: php bin/magento setup:di:compile. <br/>
 5> indexing: php bin/magento indexer:reindex/info/status. <br/>
-6> Install sample data: magento sample data:reset.
-7> Clear static content: bin/magento setup:static-content:deploy
-8> Db setup upgrade: bin/magento setup:db-schema:upgrade
+6> Install sample data: magento sample data:reset. <br/>
+7> Clear static content: bin/magento setup:static-content:deploy <br/>
+8> Db setup upgrade: bin/magento setup:db-schema:upgrade <br/>
