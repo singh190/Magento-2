@@ -1,0 +1,135 @@
+<?php 
+$baseUrl = $block->getBaseUrl(); 
+$address = parse_url($baseUrl);
+$basePath = $address['path'];
+
+$slashRemoved = substr($basePath, 0, -1);
+$slashRemoved = "/";
+$middlemanurl = $block->getSsoConfig();  
+$address = parse_url($middlemanurl);
+$ssoHost = $address['host'];
+				
+?>
+<iframe id="iframe" name="frame-id" src="<?php echo $middlemanurl ?>ifr.html" height="0" width="0"></iframe>
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+        $(document).ready(function() {
+			
+			function delCookie(cname) {
+					
+                    var domain = '<?php echo $basePath; ?>';
+                    document.cookie = cname + '=; path=' + domain + '; expires=' + new Date(0).toUTCString();
+                    domain = domain.slice(0, -1);
+                    document.cookie = cname + '=; path=' + domain + '; expires=' + new Date(0).toUTCString();
+					document.cookie = cname + '=; expires=' + new Date(0).toUTCString();
+					
+                }
+				
+				function setCookie(cname, cvalue, exdays) {
+				   var d = new Date();
+				   d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+				   var expires = "expires=" + d.toUTCString();
+				   var path = "path=/";
+				   document.cookie = cname + "=" + cvalue + "; " + path +"; " + expires;
+			   }
+
+
+                //get local cookie
+                function getCookie(cname) {
+					
+                    var name = cname + "=";
+                    var ca = document.cookie.split(';');
+                    for (var i = 0; i < ca.length; i++) {
+                        var c = ca[i];
+                        while (c.charAt(0) == ' ') c = c.substring(1);
+                        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+                    }
+                    return "";
+                }
+
+			setCookie('lastpage', window.location.href, 1);
+			
+            $('#iframe').ready(function() {
+
+                var magentoUrl = "<?php echo $baseUrl; ?>";
+                var iframeDomain = '<?php echo 'http://'.$ssoHost ?>';
+                var logoutUrl = magentoUrl + "customer/account/logout";
+                var autoLoginUrl = magentoUrl + "campingauth/account/autologin";
+				
+
+                iframe = document.getElementById('iframe');
+                var iframeTimer = setInterval(function() {
+                    iframe.contentWindow.postMessage('IMREADY', iframeDomain);
+                }, 500);
+
+
+                
+
+                
+		
+           function cookieHandler(e){
+
+               if (e.origin == iframeDomain) {
+
+                   clearInterval(iframeTimer);
+                   var globalCookie = e.data;
+                   var localCookie = getCookie("__CS");
+                   var newlogin = getCookie("newlogin");
+
+                   if (globalCookie != 'DELCOOKIE' && globalCookie != '' && globalCookie != undefined &&
+                       (localCookie == '' || localCookie == undefined)) {
+                       // redirect to Auto login
+                       setCookie('__CS', globalCookie, 1);
+                       window.location = autoLoginUrl;
+                     
+                   } else if (newlogin == 1 && localCookie != undefined &&
+                       localCookie != '' && globalCookie == 'DELCOOKIE') {
+                       // send localcookie to iframe
+                       delCookie('newlogin');
+					    iframe = document.getElementById('iframe');
+                       iframe.contentWindow.postMessage(localCookie, iframeDomain);
+                     
+                   } else if (globalCookie != undefined &&
+                       localCookie != undefined && globalCookie == localCookie) {
+                       // do nothing
+                     
+                   } else if (globalCookie == 'DELCOOKIE' && localCookie != undefined &&
+                       localCookie != '') {
+                       delCookie('__CS');
+                       delCookie('newlogin');
+                       window.location = logoutUrl;
+                   }
+               }
+           };
+
+
+                if (window.addEventListener) {
+                    // For standards-compliant web browsers
+                    window.addEventListener("message", cookieHandler, false);
+                } else {
+                    window.attachEvent("onmessage", cookieHandler);
+                }
+
+
+                $(' .mega-camping-signout').click(function() {
+                    //logout
+                    delCookie("__CS");
+                    delCookie('newlogin');
+					 iframe = document.getElementById('iframe');
+                    iframe.contentWindow.postMessage('logout', iframeDomain);
+                });
+
+                $('.camping-signout').click(function() {
+                    //logout
+                    delCookie("__CS");
+                    delCookie('newlogin');
+					 iframe = document.getElementById('iframe');
+                    iframe.contentWindow.postMessage('logout', iframeDomain);
+                });
+
+
+            });
+        });
+    });
+</script>

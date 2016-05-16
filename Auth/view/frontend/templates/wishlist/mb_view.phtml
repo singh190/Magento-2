@@ -1,0 +1,472 @@
+<?php
+?>
+
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$shareWishlistButtonBlock = $block->getLayout()->createBlock('Magento\Wishlist\Block\Customer\Wishlist\Button');
+$shareWishlistBlock = $block->getLayout()->createBlock('Magento\Wishlist\Block\Customer\Sharing');
+$blockCampingProductView = $block->getLayout()->createBlock('Camping\Product\Block\Product\View');
+$wishlistId = $block->getWishlistId();
+//$block->setMenuFlag();
+?>
+
+<div class="account-mgt ipad-userpages col-lg-12 col-md-12 col-sm-12 col-xs-12 no_pad">
+    <div class="row hidden-lg hidden-md">
+        <div class="title col-lg-9 col-md-9 col-sm-12 col-xs-12">
+            <h3>Welcome <strong>Good Sam Elite</strong></h3>
+            <div class="yellow-shadow"><button title="RENEW NOW">RENEW NOW</button></div>
+        </div>
+        <div class="call-center col-sm-12 col-xs-12">Call Center: <a href="javascript:void(0);">1-800-000-0000</a></div>
+    </div>
+    <div class="acc-wishlist clearfix">
+        <div class="col-xs-12 col-sm-12 wish-left">
+            <h2><?php echo $block->escapeHtml($block->getCustomerFirstName());
+                echo __("'s Wishlist")?></h2>
+            <div class="yellow-shadow gray-shadow">
+            <!-- block for sharing wishlist-->
+                <?php //if ($shareWishlistButtonBlock->getWishlist()->getItemsCount() && $shareWishlistButtonBlock->getWishlist()->getShared() < $shareWishlistButtonBlock->getConfig()->getSharingEmailLimit()): ?>
+                <div class="share-inner clearfix">
+                        <form class="form wishlist share"
+                              action="<?php /* @escapeNotVerified */ echo $block->getWishlistShareSendUrl() ?>"
+                              id="form-share"
+                              method="post"
+                              data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>"
+                              data-mage-init='{"validation":{}}'>
+                            <fieldset class="fieldset">
+                                <?php echo $shareWishlistBlock->getBlockHtml('formkey')?>
+                                <div id="email-form">
+                                    <label for="email_address"><?php echo __("Email Address")?></label>
+                                    <div class="control">
+                                        <input type="text" name="emails"  id="email_address" data-validate="{required:true,'validate-emails':true}" value="<?php /* @escapeNotVerified */ echo $shareWishlistBlock->getEnteredData('emails') ?>">
+                                    </div>
+
+                                    <div class="yellow-shadow">
+                                        <button type="submit" title="<?php /* @escapeNotVerified */ echo __('Share Wish List') ?>" class="action submit">
+                                            <span><?php /* @escapeNotVerified */ echo __('Share Wish List') ?></span>
+                                        </button>
+                                    </div>
+                                </div>
+                        </form>
+                        <div id="email_send_success" class="email-send" style="display:none;">
+                            <img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/account-management/email.png" alt="Send Success">
+                            <?php echo __("Your Wish List has been shared")?>
+                            <!--                                    <span>jane.smith@gmail.com</span>-->
+                        </div>
+                        <div id="email_send_fail" class="email-send" style="display:none;">
+                            <?php echo __("There has been some error while sharing your wishlist!"); ?>
+                        </div>
+                </div>
+                <?php //endif;?>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 wish-right hidden-xs">
+            <div class="select-private col-sm-6">
+                <div class="custom-select">
+                    <?php echo $block->getPrivacyOptions(); ?>
+                    <span class="select-arrow1"></span>
+                </div>
+                <a href="<?php echo $this->getUrl("campingauth/wishlist/agreement") ?>" target="_blank" title="Wishlist Agreement">Wish List Agreement</a>
+            </div>
+            <div class="add-itemto-list col-sm-6">
+                <form action="<?php echo $block->getWishlistAddSendUrl() ?>" method="POST" id="form_item_add">
+                        <label for="add"><?php echo __("Add Item to List"); ?></label>
+                        <input type="text" id="item_sku" name="item_sku"
+                               data-validate="{'required-item':true}"
+                               value="<?php echo $block->getEnteredData('item_sku')?>"
+                               placeholder="enter item/catalog number"
+                               maxlength="10">
+                        <!-- <input type="submit" name="submit"/>-->
+                        <input id="submit_add_item" name="submit_add_item" title="Add" value="ADD" type="submit" disabled="true"/>
+                    </form>
+                <!--<span class="eror-msg">The item number you entered is invalid.  Please try again.</span>-->
+            </div>
+        </div>
+
+        <?php if ($this->helper('Magento\Wishlist\Helper\Data')->isAllow()) : ?>
+            <div class="col-xs-12 col-sm-12 wishlist-inner clearfix">
+                <?php if ($block->getWishlistItemCollectionCount() > 0): ?>
+                    <?php $iterator = 1; ?>
+                    <ul class="clearfix">
+                        <?php foreach ($block->getWishlistItemCollection() as $item): ?>
+                            <?php /* @escapeNotVerified */ echo($iterator++ == 1) ? '<li class="col-xs-12 col-sm-6 col-md-6 col-lg-6" data-row="product-item" id="item_' . $item->getId() . '">' : '</li><li class="col-xs-12 col-sm-6 col-md-6 col-lg-6" id="item_' . $item->getId() . '">' ?>
+                            <!-- get product from item-->
+                            <?php $product = $block->getItemProduct($item->getProductId()); ?>
+                            <!--                            <li class="col-xs-12 col-sm-6 col-md-6 col-lg-6 just-added">-->
+                            <div class="record-list">
+                                <?php echo __("ADDED ");
+                                echo $block->getWishlistAddedAt($item->getAddedAt()); ?>
+                                <div class="wish-panel">
+                                    <div class="clearfix">
+                                        <!--  div for product image-->
+                                        <div class="col-md-5 col-lg-5 WLL-panel">
+                                                <a href='<?php echo $product->getProductUrl() ?>' class='cloud-zoom' id='zoom1' rel="adjustX:10, adjustY:-4">
+                                                    <img src="<?php echo $block->getProductImage() ?>" alt='' title="<?php echo $product->getName(); ?>" />
+                                                </a>
+                                        </div>
+                                        <!-- div for product description-->
+                                        <div class="col-md-7 col-lg-7 WLR-panel">
+                                            <!-- display product name-->
+                                            <h4>
+                                                <a href="<?php /* @escapeNotVerified */ echo $product->getProductUrl() ?>" title="<?php echo $block->escapeHtml($product->getName()) ?>" class="product-item-link">
+                                                    <?php echo $block->escapeHtml($product->getName()) ?>
+                                                </a>
+                                            </h4>
+                                            <!-- display catalog item no.-->
+                                            <p>
+                                                <?php echo __("Catalog Item #: "); ?>
+                                                <span><?php echo $block->escapeHtml($product->getSku()) ?></span>
+                                            </p>
+                                            <!-- display product price-->
+                                            <div class="price clearfix">
+                                                <div class="sale-left">
+                                                    <?php
+                                                    //    $priceBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\ListProduct');
+                                                    //  getting $product object, passed $product object inside function
+                                                    //  echo $priceBlock->getProductPrice($product);
+
+                                                    $priceHelper = $objectManager->get('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
+                                                    //$finalPrice = $block->getItemPrice($product->getFinalPrice());
+                                                    $finalPrice = $priceHelper->currency($product->getFinalPrice(), true, false);
+                                                    $oldPrice = $priceHelper->currency($product->getPrice(), true, false);
+                                                    echo __("SALE ");
+                                                    echo $block->escapeHtml($finalPrice);
+                                                    ?>
+                                                    <br>
+                                                    <?php if ($product->getFinalPrice() < $product->getPrice()):?>
+                                                        <span class="price-off">
+                                                            <span>
+                                                                <?php $oldPrice = $priceHelper->currency($product->getPrice(), true, false);
+                                                                echo $block->escapeHtml($oldPrice);
+                                                                ?>
+                                                            </span>
+                                                            <?php if ($finalPrice && $oldPrice): ?>
+                                                                <?php echo __("SAVE ")?>
+                                                                <?php $priceOff = $block->getPriceOff($product->getPrice(),$product->getFinalPrice());
+                                                                echo $block->escapeHtml($priceHelper->currency($priceOff, false, false));
+                                                                echo __("%")?>
+                                                            <?php endif ;?>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                            <!-- display reviews-->
+                                                <span class="review-count">
+                                                    <?php
+                                                    $reviewBlock =  $block->getLayout()->createBlock('Magento\Catalog\Block\Product\View');
+                                                    //getting $product object, passed $product object inside function
+                                                    echo $reviewBlock->getReviewsSummaryHtml($product, Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW, true);
+                                                    ?>
+                                                </span>
+                                        </div>
+                                    </div>
+                                    <?php if ($product->isSaleable() && $product->isInStock()): ?>
+                                        <div class="in-stock">
+                                            This Item is <span>In-Stock</span> and delivered to you by
+                                            <span>Monday, January 4th</span> for <span>$10</span>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="in-stock red"><span class="outof-stock">This item is Out of Stock</span></div>
+                                    <?php endif ;?>
+                                    <ul class="shoppinginfo clearfix">
+                                        <?php if ($product->getOnlineItem()): ?><li><a title="Online Only" href="javascript:void(0);"><img
+                                                    src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/list-view/online-only.png"
+                                                    alt="Online Only"></a></li><?php endif; ?>
+                                        <?php if ($product->getBuyMore()): ?><li><a title="Buy More Save More" href="javascript:void(0);"><img
+                                                    src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/list-view/save-more.png"
+                                                    alt="Buy More Save More"></a></li><?php endif; ?>
+                                        <?php if ($product->getNewItem()): ?> <li><a title="New Item" href="javascript:void(0);"><img
+                                                    src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/list-view/new-item.png"
+                                                    alt="New Item"></a></li><?php endif; ?>
+                                        <?php if (!$product->getSkuSpecialShip()): ?>
+                                            <li><a title="Free Shipping" href="javascript:void(0);"><img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/plp/free.png" alt="Free Shipping"> </a></li>
+                                        <?php endif; ?>
+                                    </ul>
+                                    <!-- display add to cart-->
+                                    <div class="yellow-shadow">
+                                        <?php if ($product->isSaleable() && $product->isInStock()): ?>
+                                            <div class="product-item-actions">
+                                                <!--                                                    --><?php //$cartBlock = $block->getLayout()->createBlock('Camping\Product\Block\Product\View')?>
+                                                <form
+                                                    action="<?php /* @escapeNotVerified */ echo $blockCampingProductView->getAddToCartUrl($product) ?>"
+                                                    method="post" id="product_addtocart_form"
+                                                    enctype="multipart/form-data">
+                                                    <button type="submit"
+                                                            title="<?php /* @escapeNotVerified */ echo __('Add to Cart') ?>"
+                                                            class="action  tocart" id="product-addtocart-button">
+                                                        <span><?php /* @escapeNotVerified */ echo __('Add to Cart') ?></span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        <?php else: ?>
+                                            <button type="button"
+                                                    disabled
+                                                    title="<?php /* @escapeNotVerified */ echo __('Out of Stock') ?>"
+                                                    class="action  tocart" id="product-addtocart-button">
+                                                <span><?php /* @escapeNotVerified */ echo __('Out of Stock') ?></span>
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <!--  for close icon to remove item from wishlist-->
+                                <a
+                                    href="#"
+                                    data-role="remove"
+                                    data-post='<?php /* @escapeNotVerified */ echo $block->getWishlistItemRemoveParams($item)?>'
+                                    title="<?php /* @escapeNotVerified */ echo __('Remove Item') ?>"
+                                    data-item-id="<?php /* @escapeNotVerified */ echo $item->getId()?>"
+                                    class="close_icon">
+                                    <span><?php /* @escapeNotVerified */ echo __('Yes') ?></span>
+                                </a>
+                            </div>
+                            <?php echo($iterator == count($item)+1) ? '</li>' : '' ?>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif;?>
+            </div>
+        <?php endif;?>
+    </div>
+</div>
+
+<!--script for recommended products-->
+<script type="text/javascript">
+    require(['jquery'],function($){
+        $(document).ready(function() {
+            HawkSearch.Tracking.track("pageLoad", { pageType: "item" });
+        });
+    });
+</script>
+<div class="footer-recommended home-recommended" id="featurewishlist">
+    <div class="left-mask"></div>
+    <div class="right-mask"></div>
+    <div class="hawk-recommendation" data-widgetguid="7045b593-c6ce-4902-84dd-1e0884785b23"></div>
+</div>
+<?php
+$baseUrl = $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+    ->getStore(1)
+    ->getBaseUrl();
+?>
+
+
+<!--privacy settng -->
+<script>
+    require(['jquery'],function($){
+        $(document).ready(function() {
+            $("#wishlistprivacy").change(function () {
+                var privacyId = $(this).val();
+                $("#privacy_loading").css('display','block');
+                $('#privacy_loading').html('<img src="http://preloaders.net/preloaders/712/Floating%20rays.gif"> loading...');
+                $.ajax({
+                    url:"<?php echo $block->getUrl('campingauth/wishlist/privacysetting')?>",
+                    type:"POST",
+                    data:{privacyId:privacyId}
+                }).done(function(data){
+                    if (data.success == true){
+                        $('#privacy_loading').html('Privacy setting updated successfully');
+                        $("#privacy_loading").delay(3000).hide(0);
+                    }else {
+                        $('#privacy_loading').html('Found error while saving Privacy setting<br/>'+data['message']);
+                        $("#privacy_loading").delay(3000).hide(0);
+                    }
+                });
+            });
+        })
+    });
+</script>
+<script>
+    function validatons(){
+        jQuery('#search-error').html('enter name or email address');
+        jQuery('#search-error').addClass('mage-error');
+    }
+    /*function getPrivacy(value){
+        var url = "<?php //echo $baseUrl; ?>mywishlist/index/privacy/";
+        var customerId = "<?php //echo $customerSession->getId(); ?>";
+        jQuery.ajax({
+            type: 'get',
+            url: url,
+            async: true,
+            data: { privacytxt : value, customerId : customerId},
+            success: function (data) {
+                var result = jQuery.parseJSON(data);
+                jQuery.each(result, function(key, value){
+                    if(key == 'searchs'){
+                        jQuery('#searchresult').html(value);
+                    }
+                });
+            },
+        });
+    }*/
+    require(["jquery"], function ($) {
+        $(document).ready(function ()  {
+            jQuery("#otherusersearch").click(function () {
+                if (jQuery('#form1').valid()) {
+                    var searchtxt = jQuery('#search').val();
+                    var url = "<?php echo $baseUrl; ?>mywishlist/index/search/";
+                    jQuery.ajax({
+                        type: 'get',
+                        url: url,
+                        async: true,
+                        data: { searchtxt : searchtxt },
+                        success: function (data) {
+                            var result = jQuery.parseJSON(data);
+                            jQuery.each(result, function(key, value){
+                                if(key == 'searchs'){
+                                    jQuery('#wishlistview').css("display","none");
+                                    jQuery('#featurewishlist').css("display","none");
+                                    jQuery('#searchresult').html(value);
+                                }
+                            });
+                        },
+                    });
+                    return false;
+                }else{
+                    setTimeout(validatons, 0);
+                    return false;
+                }
+            });
+        });
+    });
+</script>
+<!--script for close button; remove from wishlist-->
+<script>
+    require(['jquery'],function($){
+        $(document).ready(function() {
+            $(".close_icon").click(function(){
+                $("#remove_item_popup").fadeIn(1000);
+                positionPopup();
+            });
+//close popup
+            $("#close_popup").click(function(){
+                $("#remove_item_popup").fadeOut(500);
+            });
+            $(".confirm_remove_item").click(function(){
+                $("#remove_item_popup").fadeOut(500);
+                return true;
+            });
+        });
+        //position the popup at the center of the page
+        function positionPopup(){
+            if(!$("#remove_item_popup").is(':visible')){
+                return;
+            }
+            $("#remove_item_popup").css({
+                left: ($(window).width() - $('#remove_item_popup').width()) / 2,
+                top: ($(window).width() - $('#remove_item_popup').width()) / 7,
+                position:'absolute'
+            });
+        }
+//maintain the popup at center of the page when browser resized
+        $(window).bind('resize',positionPopup);
+    });
+</script>
+<!--<script>
+    require(['jquery'],function($){
+        $(document).ready(function() {
+            $(".close_icon").click(function () {
+                if (!confirm('Are you sure you want to reomove item from Wishlist!')){
+                    return false;
+                }
+            })
+        });
+    });
+</script>-->
+
+<!--script for share wishlist-->
+<script>
+    require(['jquery'
+    ],function($)
+    {
+        $(document).ready(function()
+        {
+//$('#loading').html('<img src="http://preloaders.net/preloaders/287/Filling%20broken%20ring.gif"> loading...');
+            var frm =  $('#form-share');
+            frm.submit(function(e)
+            {
+                e.preventDefault();
+                var emails = $('#email_address').val();
+                var wishlist_id = <?php echo $wishlistId; ?>;
+                $.ajax({
+                    url:frm.attr('action'),
+                    type:frm.attr('method'),
+                    data:{emails:emails,wishlist_id:wishlist_id}
+                }).done(function(data){
+                    if (data.success == true){
+                        $("#email_send_success").addClass('in');
+                        $("#email_send_success").css('display','block');
+                        $("#email_send_success").delay(5000).hide(0);
+                    }else {
+                        $("#email_send_fail").addClass('in');
+                        $("#email_send_fail").css('display','block');
+                        $("#email_send_fail").delay(5000).hide(0);
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+<!--script for add to item-->
+<script>
+    require(['jquery'],
+        function($)
+        {
+            $(document).ready(function()
+            {
+                var frm =  $('#form_item_add');
+                frm.submit(function(e)
+                {
+                    e.preventDefault();
+                    var item = $('#item_sku').val();
+                    var curl = window.location.href;
+                    var div=$('#wishlist_left_div').html();
+                    $.ajax({
+
+                        url:frm.attr('action'),
+                        type:frm.attr('method'),
+                        data:{item_sku:item},
+                        success:function(data)
+                        {
+                            setTimeout(function(){// wait for 5 secs(2)
+                                location.reload(); // then reload the page.(3)
+                            }, 5000);
+                        },
+                        error: function (e)
+                        {
+                            $("#failure").append(e);
+                        }
+                    });
+
+                });
+
+            });
+        });
+</script>
+
+<!--script for validating add item to wishlist-->
+<script>
+    require([
+        'jquery',
+        'mage/mage'
+    ], function($){
+
+        var dataForm = $('#form_item_add');
+        var ignore = null;
+
+        dataForm.mage('validation', {
+            ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+        }).find('input:text').attr('autocomplete', 'off');
+    });
+</script>
+<!--<script>
+    require(['jquery'],function($){
+        $(document).ready(function() {
+            $('#item_sku').on('input change', function () {
+                if ($(this).val() != '') {
+                    $('#submit_add_item').prop('disabled', false);
+                }
+                else {
+                    $('#submit_add_item').prop('disabled', true);
+                }
+            });
+        });
+    });
+</script>-->

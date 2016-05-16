@@ -1,0 +1,3150 @@
+<?php  
+	$flagVal = $block->getMenuFlag();
+	$baseUrl = $block->getUrl('');
+	
+	if($baseUrl == "http://dev1.campingworld.com/"){
+		$baseUrl = "http://dev1.goodsam.com/";
+	}else{
+		$baseUrl = "http://qa.goodsam.com/";
+	} 
+	
+	$renewprompturl 		= $baseUrl . 'renew-membership';
+	$renewroadsideprompturl = $baseUrl . 'renew-roadside-membership';
+	$renewtravelprompturl 	= $baseUrl . 'renew-travel-membership';
+	$renewespprompturl 		= $baseUrl . 'renew-esp-membership';
+	
+	$selectplanurl 			=  $baseUrl . 'goodsamclub/selectaplan';
+	$samalerturl   			=  $baseUrl . 'samalert';
+	$referfriendurl 		=  $baseUrl . 'referafriend';
+	$actionlineurl 			=  $baseUrl . 'action_line';
+	$discountsurl 			=  $baseUrl . 'coupons';
+	$volunteersurl 			=  $baseUrl . 'volunteer';
+	$printcardurl    		=  $baseUrl . 'print/membership_card';
+	$whyjoinurl      		=  $baseUrl . 'whyjoin';
+	$howitworksurl 			=  $baseUrl . 'club/how-it-works';
+	$fuelsavingsurl 		=  $baseUrl . 'rvpluscard';
+	
+	$learnmoreurl 			=  $baseUrl . 'roadside/assistance';
+	$faqurl 				=  $baseUrl . 'FAQ/Roadside';
+	$joinnowurl 			=  $baseUrl . 'roadside/compare';
+		
+	$ta_learnmoreurl 		=  $baseUrl . 'travelassist-benefits'; 
+	$ta_faqurl 				=  $baseUrl . 'FAQ/Travel-Assist';
+	$ta_joinnowurl 			=  $baseUrl . 'travelassist/compare';
+	
+	$esp_whyjoinurl 		=  $baseUrl . 'why_purchage_esp';
+	$esp_faqurl 			=  $baseUrl . 'FAQ/Extended-Service-Plan'; 	
+	$esp_getquoteurl 		= 'https://www.goodsamespquote.com/goodsamb2c/fs?MACH_NAME=QUOTE&ACTION_NAME=NewQuoteByEmail&PackageCode=INDF08FL';	
+	
+	$widgetmembericon 		= 'https://images3.campingworld.com/CampingWorld/images/V2/GS/common/gsmember.png'; 
+	$widgetmembericon_ra 	= 'https://images3.campingworld.com/CampingWorld/images/V2/GS/dashboard/roadside.png'; 
+	$widgetmembericon_ta 	= 'https://images3.campingworld.com/CampingWorld/images/V2/GS/dashboard/travelassist.png'; 
+	$widgetmembericon_esp 	= 'https://images3.campingworld.com/CampingWorld/images/V2/GS/dashboard/esp.png'; 
+
+
+ 		$profileInfo = $block->getProfileInfo(); 
+		
+		$firstName = $profileInfo['data']['FirstName'];
+		$lastName  = $profileInfo['data']['LastName'];
+		
+		$nickname 	= $profileInfo['data']['CommunityNickname'];
+
+		$sfname = "";
+		$slname = "";
+		
+		if(isset($profileInfo['data']['SpouseFName__c'])){
+			$sfname   	=  $profileInfo['data']['SpouseFName__c'];
+		}
+		if(isset($profileInfo['data']['SpouseLName__c'])){
+			$slname    	=  $profileInfo['data']['SpouseLName__c'];
+		}	
+
+		$street    	=  $profileInfo['data']['Street'];
+		$street2="";
+		if(isset($profileInfo['data']['Street2__c'])){
+			$street2    =  $profileInfo['data']['Street2__c'];
+ 		}
+ 		$city    	=  $profileInfo['data']['City'];
+ 		$state    	=  $profileInfo['data']['State'];  
+ 		$country    =  $profileInfo['data']['Country'];
+ 		$postcode   =  $profileInfo['data']['PostalCode'];
+		$homePhone   =  $profileInfo['data']['Phone'];
+		$MobilePhone   =  $profileInfo['data']['MobilePhone'];
+		
+		$fieldConfig = $block->getFieldConfig();
+		
+		foreach($fieldConfig as  $field){
+			$fieldVal[] = $field['url_key'];
+		}
+ 
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->get('Magento\Customer\Model\Session');
+$customerName = $objectManager->get('Magento\Customer\Block\Account\Dashboard\Info');
+
+$coun = "US";
+/**
+ * Get the Region Id
+ */
+if($country == "United States"){
+	$coun = "US";
+}elseif($country == "Canada"){
+	$coun = "CA";
+}elseif($country == "Mexico"){
+	$coun = "MX";
+}
+
+$regionId = $block->getRegId($state,$coun);
+$editSuccessMessage = $block->getEditSucessMessage();
+
+/**
+ * Set Username 
+ */
+$username = $block->getUserName(); 
+
+$getNoErrors = $block->getNoErrors();
+
+$userInfoErrors = $block->setUserInfoErrors();
+
+/**
+ * Get RV Profile
+ */
+$helper = $objectManager->get('Camping\Auth\Helper\Data');
+$rvprofile = $helper->getRVProfile();
+
+/**
+ * Get RV type
+ */
+$rvType = $helper->getRVType();
+
+/**
+ * gsc membership Details
+ */
+ $json = $block->getGscMembership();
+ 
+ /**
+  * ra membership Details
+  */
+ $ra_json = $block->getRaMembership();
+ 
+ 
+ /**
+  * ta membership Details
+  */
+ $ta_json = $block->getTaMembership();
+ 
+ /**
+  * ta membership Details
+  */
+ $esp_json = $block->getEspMembership();
+ $_countries = $objectManager->get('Magento\Directory\Model\ResourceModel\Country\Collection')->loadData()->toOptionArray(false);
+?>
+ 
+
+ <?php if(isset($getNoErrors)){ ?>
+ <script>
+ require(['jquery'],function($){
+ $(document).ready(function() {
+	  $("#success-msg").addClass('in');
+	  $("#success-msg").css('display','block');
+	  $("body").addClass('modal-open');  
+	  $('body').append('<div class="modal-backdrop fade in"></div>');
+
+	});
+ });	
+ </script>
+ 
+<div class="modal fade" id="success-msg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg signin_success" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4 class="successmsg text-center">Success!</h4>
+                <p>Registration successfully done</p>
+                <div class="form-group" align="center">
+                    <a href="<?php echo $block->getUrl(''); ?>"><input type="button" value="Go to Home" class="btn yellow-btn"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php } ?>
+<div class="inner-page clearfix">
+            <div class="account-mgt col-lg-12 col-md-12 col-sm-12 col-xs-12 no_pad">
+                <div class="row hidden-lg hidden-md">
+                    <div class="title col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                        <h3>Welcome <strong> <?php echo $customerName->getName(); ?></strong></h3>
+                        <!--<div class="yellow-shadow"><button >RENEW NOW</button></div>-->
+                    </div>
+                    <div class="call-center col-lg-3 col-md-3 col-sm-12 col-xs-12">Call Center: <a href="javascript:;">1-800-000-0000</a></div>
+                </div>
+
+                <div class="dashboard_tabs">
+
+                    <div class="account_tabs hidden-sm hidden-xs">
+                        <ul class="nav nav-tabs container L-R-Space responsive" id="myTab">
+                            <li class="<?php if(empty($flagVal)){ echo 'active'; } ?>"><a href="#dashboard" title="Dashboard">Dashboard</a></li>
+                            <li><a href="#user-info" title="User Info">User Info</a></li>
+                            <li><a href="#rv-profile" title="RV Profile">RV Profile</a></li>
+                            <li><a href="#preferences" title="Preferences">Preferences</a></li>
+                            <li><a href="#order-history" title="Order history">Order history</a></li>
+                            <li><a href="#wishlist" title="Wishlist">Wishlist</a></li>
+                            <li><a href="#favorite-rv" title="Favorite RV’s">Favorite RV’s</a></li>
+                        </ul>
+                    </div>
+                    <div class="tab-content container L-R-Space responsive hidden-sm hidden-xs">
+                        <div class="tab-pane <?php if(empty($flagVal)){ echo 'active'; } ?>" id="dashboard">
+                            <div class="acc-mgt-dash col-xs-p15">
+	<?php			
+
+	$output = '';
+	
+	if($json != ''){
+ 
+ 	$dashboard = json_decode($json);
+
+	$benefitsurl = $baseUrl."mystuff/YourBenefits/";
+ 	/**
+ 	 * or current datetime
+ 	 */ 
+ 	$now = time(); 
+ 	$your_date   = strtotime("tomorrow", strtotime($dashboard->{'ExpireDate'}));
+ 	$datediff = $your_date - $now ;
+ 	$expiresindays =  (floor($datediff/ 86400));
+ 	
+ 	/**
+ 	 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+ 	 */
+ 	if( $expiresindays > -60 ){ 
+ 		$output .= ' <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+ 		/**
+ 		 * ABOUT TO EXPIRE
+ 		 */ 
+ 		if($expiresindays >= 0 && $expiresindays <60){ 
+ 			if($dashboard->{'BenefitLevel'} == 'Classic' || $dashboard->{'BenefitLevel'} == 'Deluxe') {
+ 				$expirydaystext = 'EXPIRES IN '. $expiresindays .' DAYS';
+ 				if($expiresindays == 0 || $expiresindays == 1) {
+ 					$expirydaystext = 'EXPIRES TODAY';
+ 				}
+ 				$output .= '<div class="dashboard-widget expires member-label">';
+ 				$output .=  '<div class="title-label">
+											<span>&nbsp;</span>
+											<div>'. $expirydaystext . '</div>
+								</div>';
+ 			} else {
+ 				$output .= '<div class="dashboard-widget expires">';
+ 			} 
+ 		}else if($expiresindays < 0 && $expiresindays >= -60){ 
+ 				
+ 			if($dashboard->{'BenefitLevel'} == 'Classic' || $dashboard->{'BenefitLevel'} == 'Deluxe'){
+ 				$renewdays = (61 + $expiresindays);
+ 				$renewdaystext = 'RENEW IN '. $renewdays .' DAYS';
+ 				if($renewdays == 1){
+ 					$renewdaystext = 'RENEW TODAY';
+ 				}
+ 				$output .= '<div class="dashboard-widget expires member-label">';
+ 				$output .=  '<div class="title-label">
+											<span>&nbsp;</span>
+											<div>'. $renewdaystext .'</div>
+										</div>';
+ 			}else{
+ 				$output .= '<div class="dashboard-widget expires">';
+ 			}
+ 
+ 			$selectplanurl =  $baseUrl . 'services'; 
+ 			$samalerturl = $renewprompturl;
+ 			$referfriendurl = $renewprompturl;
+ 			$actionlineurl = $renewprompturl;
+ 			$discountsurl = $renewprompturl;
+ 			$volunteersurl = $renewprompturl;
+ 			$printcardurl = $renewprompturl;
+ 			$fuelsavingsurl= $renewprompturl;
+ 			$benefitsurl = $renewprompturl;
+ 		} else { 
+ 			$output .='<div class="dashboard-widget">';
+ 		}
+ 
+ 		$output .='<img src="'.$widgetmembericon.'" alt="" />
+						<h3>'. $dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+ 
+						<div class="collapse" id="collapseExample">
+ 
+							<div class="members-id">
+								<p><b>'. $dashboard->{'MemberType'} .'</b></p>
+								<p><b>Membership ID#</b>'. $dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+ 			
+ 		if( $dashboard->{'IsAutoRenew'} == true){
+ 			$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+ 		}else{
+ 			$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+ 		}
+ 
+ 		$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $samalerturl .'">Sam Alert</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $actionlineurl .'">Action Line</a>
+									</p>
+ 
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $printcardurl .'">Member Card</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $discountsurl .'">Discounts</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $benefitsurl  .'">Your Benefits</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $fuelsavingsurl  .'">Fuel Savings</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $referfriendurl .'">Refer a Friend</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $volunteersurl .'">Volunteer</a>
+									</p>';
+ 			
+ 		if($dashboard->{'BenefitLevel'} == 'Classic' || $dashboard->{'BenefitLevel'} == 'Deluxe'){
+ 			$output .= '<p align="left"><a class="renew btn btn-default" href="'. $selectplanurl .'">Renew Now</a></p>';
+ 		}
+ 		$output .= '</div></div></div></div>';
+ 	} else if($expiresindays <= -60){
+ 		$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon .'" alt="" />
+						<h3>Good Sam</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample1" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+ 
+						<div class="collapse" id="collapseExample1">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>'. $dashboard->{'ClubName'} .'</b> to your Membership
+							</p>
+						</div>
+						<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($dashboard->{'ExpireDate'})) .'</sapn></p>
+								</div>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $whyjoinurl .'">Why Join</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $howitworksurl .'">How it Works</a>
+							</p>
+							<p>
+								<a class="renew btn btn-default" href="'. $selectplanurl .'">Join Now</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#add_member">Add Membership</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+ 	}
+ }else{ 
+ 	/**
+ 	 * Non-GSC Member
+ 	 */
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon .'" alt="" />
+						<h3>Good Sam</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample2" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+
+						<div class="collapse" id="collapseExample2">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>Good Sam</b> to your Membership
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $whyjoinurl .'">Why Join</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $howitworksurl .'">How it Works</a>								
+							</p>
+							<p>
+								<a class="renew btn btn-default" href="'. $selectplanurl .'">Join Now</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#add_member">Add Membership</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';			
+		}
+		
+		
+		/**
+		 * Dummy Content for Road Side Assistance Widget
+		 */
+		if($ra_json != ''){
+		
+			$ra_dashboard = json_decode($ra_json);
+			
+			//$rabenefitsurl = $helper->get_rsa_plan_detail_url($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}))!= NULL ? $helper->get_rsa_plan_detail_url($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}))->toString() : NULL;
+			$rabenefitsurl = $baseUrl."rabenefitsurl";
+			
+			$claimformurl =  $baseUrl."roadside/onlineclaimform";
+			$membercardurl =  $baseUrl."roadside/printmembership";
+			
+			/*
+			if (stripos($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}), "standard") !== false) {
+				//$renewurl = Url::fromRoute('dashboard.raselectplan',['planname'=>"auto-rv-standard"])->toString();
+				$renewurl = $baseUrl."standard";
+			}else if (stripos($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}), "platinum") !== false) {
+				//$renewurl = Url::fromRoute('dashboard.raselectplan',['planname'=>"auto-rv-platinum"])->toString();
+				$renewurl = $baseUrl."platinum";
+			}else if (stripos($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}), "auto platinum") !== false) {
+				//$renewurl = Url::fromRoute('dashboard.raselectplan',['planname'=>"auto-platinum"])->toString();
+				$renewurl = $baseUrl."auto-platinum";
+			}
+			*/ 
+			 $renewurl = $baseUrl."rarenewurl/";
+			 
+			$now = time(); 
+			$your_date   = strtotime("tomorrow", strtotime($ra_dashboard->{'ExpireDate'}));
+			$datediff = $your_date - $now ;
+			$expiresindays =  (floor($datediff/ 86400));
+			/**
+			 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+			 */
+			if( $expiresindays > -60 ) {
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+				
+				/**
+				 * ABOUT TO EXPIRE
+				 */ 
+				if($expiresindays >= 0 && $expiresindays  <= 60)  {
+					$expirydaystext = 'EXPIRES IN '. $expiresindays .' DAYS';
+					if($expiresindays == 1 || $expiresindays == 0) {
+						$expirydaystext = 'EXPIRES TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+					    			<span>&nbsp;</span>
+				    				<div>'. $expirydaystext .'</div>
+								</div>';
+				} else if($expiresindays < 0 && $expiresindays >= -60) { 
+					/**
+					 * GRACE PERIOD
+					 */ 
+					$rabenefitsurl = $renewroadsideprompturl;
+					$claimformurl  = $renewroadsideprompturl;
+					$membercardurl = $renewroadsideprompturl;
+						
+					$renewdays = (61 + $expiresindays);
+					$renewdaystext = 'RENEW IN '. $renewdays .' DAYS';
+					if($renewdays == 1) {
+						$renewdaystext = 'RENEW TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+								 <span>&nbsp;</span>
+								 <div>'. $renewdaystext .'</div>
+								 </div>';
+				} else {
+					/**
+					 * ACTIVE
+					 */ 
+					$output .='<div class="dashboard-widget">';
+				}
+		
+				$output .='<img src="'.$widgetmembericon_ra.'" alt="" />
+						<h3>'. $ra_dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample3" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+						<div class="collapse" id="collapseExample3">
+		
+							<div class="members-id">
+								<p><b>'. $helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}) .'</b></p>
+								<p><b>Membership ID#</b>'. $ra_dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $ra_dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ra_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ra_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+					
+				if( $ra_dashboard->{'IsAutoRenew'} == true) {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				} else {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				}
+		
+				$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $membercardurl .'">Member Card</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $claimformurl .'">Claim Form</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $rabenefitsurl  .'">Benefits</a>
+										<a class="dash-blue-btn btn btn-default renew" href="'. $renewurl .'">Renew</a>
+									</p>';
+					
+				/* 
+				if($ra_dashboard->{'BenefitLevel'} == 'Classic' || $ra_dashboard->{'BenefitLevel'} == 'Deluxe'){
+				 		$output .= '<p align="left"><a class="renew btn btn-default" href="'. $selectplanurl .'">Renew Now</a></p>';
+				 } 
+				 */
+				$output .= '</div></div></div></div>';
+			} else if($expiresindays <= -60){
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ra .'" alt="" />
+						<h3>Good Sam Roadside Assistance Membership</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample4" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample4">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>Good Sam Roadside Assistance</b> to your Membership
+							</p>
+						</div>
+						<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ra_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ra_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ra_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+			}
+		} else{ 
+			/**
+			 * Non-RA Member
+			 */
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ra .'" alt="" />
+						<h3>Good Sam Roadside Assistance Membership</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample5" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample5">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> to add <b>Good Sam Roadside Assistance</b> to your Membership
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ra_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+		}
+		
+		
+		
+		if($ta_json != ''){
+		
+			$ta_dashboard = json_decode($ta_json);
+			$ta_membercardurl = $baseUrl."travelassist/printmembership/";
+			
+			
+			//$ta_benefitsurl = $helper->get_dashboard_ta_plan_detail_url($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}))!= NULL ? $helper->get_rsa_plan_detail_url($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'})): $baseUrl.'/under_construction';
+			$ta_benefitsurl = $baseUrl."benefitsurl/";
+			
+			/*
+			if (stripos($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}), "basic") !== false) {
+				//$ta_renewurl = Url::fromRoute('dashboard.taselectplan',['planname'=>"basic"])->toString();
+				$ta_renewurl = $baseUrl."/basic";
+			}
+			else if (stripos($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}), "premier") !== false) {
+				//$ta_renewurl = Url::fromRoute('dashboard.taselectplan',['planname'=>"premier"])->toString();
+				$ta_renewurl = $baseUrl."/premier";
+			}
+			else{
+				$ta_renewurl = $baseUrl.'/under_construction';
+			}
+			*/
+			$ta_renewurl = $baseUrl.'tarenewurl/';
+			/**
+			 * or current datetime
+			 */ 
+			$now = time(); 
+			$your_date   = strtotime("tomorrow", strtotime($ta_dashboard->{'ExpireDate'}));
+			$tadatediff = $your_date - $now ;
+			$taexpiresindays =  (floor($tadatediff/ 86400));
+
+			/**
+			 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+			 */
+			if( $taexpiresindays > -60 )  {
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+				
+				/**
+				 * ABOUT TO EXPIRE
+				 */ 
+				if($taexpiresindays >= 0 && $taexpiresindays  <= 60)  {
+					$taexpirydaystext = 'EXPIRES IN '. $taexpiresindays .' DAYS';
+					if($taexpiresindays == 1 || $taexpiresindays == 0) {
+						$taexpirydaystext = 'EXPIRES TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+					    			<span>&nbsp;</span>
+				    				<div>'. $taexpirydaystext .'</div>
+								</div>';
+				} else if($taexpiresindays < 0 && $taexpiresindays >= -60) {
+					/**
+					 * GRACE PERIOD
+					 */ 
+					$ta_membercardurl = $renewtravelprompturl;
+					$ta_benefitsurl = $renewtravelprompturl;
+						
+					$tarenewdays = (61 + $taexpiresindays);
+					$tarenewdaystext = 'RENEW IN '. $tarenewdays .' DAYS';
+					if($tarenewdays == 1) {
+						$tarenewdaystext = 'RENEW TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+								 <span>&nbsp;</span>
+								 <div>'. $tarenewdaystext .'</div>
+								 </div>';
+				} else {
+					/**
+					 * ACTIVE
+					 */
+					$output .='<div class="dashboard-widget">';
+				}
+		
+				$output .='<img src="'.$widgetmembericon_ta.'" alt="" />
+						<h3>'. $ta_dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample3" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+						<div class="collapse" id="collapseExample3">
+		
+							<div class="members-id">
+								<p><b>'. $helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}) .'</b></p>
+								<p><b>Membership ID#</b>'. $ta_dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $ta_dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ta_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ta_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+					
+				if( $ta_dashboard->{'IsAutoRenew'} == true) {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				} else {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				}
+		
+				$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $ta_membercardurl .'">Member Card</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $ta_benefitsurl  .'">Benefits</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default renew" href="'. $ta_renewurl .'">Renew</a>
+									</p>';
+					
+		
+				$output .= '</div></div></div></div>';
+			} else if($taexpiresindays <= -60){
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ta .'" alt="" />
+						<h3>Good Sam Travel Assistance Membership</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample4" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample4">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>Good Sam Roadside Assistance</b> to your Membership
+							</p>
+						</div>
+						<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ta_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ta_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ta_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $ta_learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+			}
+		}
+		else{
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ta .'" alt="" />
+						<h3> Travel Assist </h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample6" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample6">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b> Travel Assist </b> to your Membership
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ta_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $ta_learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+		}
+		
+		
+		if($esp_json != ''){
+			$esp_dashboard = json_decode($esp_json);
+	
+			$esp_claimformurl = $baseUrl.'howespworks/'; 
+			$esp_benefitsurl = $baseUrl.'esp_coverage/';
+			 
+			/**
+			 * or current datetime
+			 */ 
+			$now = time(); 
+			$your_date   = strtotime("tomorrow", strtotime($esp_dashboard->{'ExpireDate'}));
+			$esp_datediff = $your_date - $now ;
+			$esp_expiresindays =  (floor($esp_datediff/ 86400));
+
+			/**
+			 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+			 */
+			if( $esp_expiresindays > -60 )  {
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+		
+				$esp_expirydaystext = 'Active';
+				$output .= '<div class="dashboard-widget expires member-label">';
+				$output .=  '<div class="title-label">
+					    			<span>&nbsp;</span>
+				    				<div>'. $esp_expirydaystext .'</div>
+								</div>';
+		
+		
+		
+				$output .='<img src="'.$widgetmembericon_esp.'" alt="" />
+						<h3>'. $esp_dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample3" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+						<div class="collapse" id="collapseExample3">
+		
+							<div class="members-id">
+								<p><b>'. $esp_dashboard->{'MemberType'} .'</b></p>
+								<p><b>Membership ID#</b>'. $esp_dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $esp_dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($esp_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($esp_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+					
+				if( $esp_dashboard->{'IsAutoRenew'} == true) {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				} else {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				}
+		
+				$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $esp_benefitsurl .'">Benefits</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $esp_claimformurl .'">Claim Processing</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $esp_faqurl  .'">FAQ</a>
+									</p>';
+					
+		
+				$output .= '</div></div></div></div>';
+			}
+			else if($esp_expiresindays <= -60){
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Get a Quote</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_esp .'" alt="" />
+						<h3> Extended Service Plan </h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample7" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample4">
+						<div class="join_add">
+							<p>
+								Signup to Extended Service Plan Today
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="renew btn btn-default" href="'. $esp_whyjoinurl .'">Why Purchase</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#esp_member">Add Membership</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_getquoteurl .'">Get a Quote</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+			}
+		}
+		else
+		{
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Get a Quote</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_esp .'" alt="" />
+						<h3> Extended Service Plan </h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample7" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample7">
+						<div class="join_add">
+							<p>
+								Signup to Extended Service Plan Today
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="renew btn btn-default" href="'. $esp_whyjoinurl .'">Why Purchase</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#esp_member">Add Membership</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_getquoteurl .'">Get a Quote</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+		}
+		
+		
+		echo $output;
+		
+?>
+                            </div>
+                            
+                        </div>
+                        
+						
+                        <div class="tab-pane" id="user-info">
+						<form class="form-address-edit" action="<?php /* @escapeNotVerified */ echo $block->getBaseUrl() ?>" method="post" id="form-validate" enctype="multipart/form-data" data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>">
+        				<?php echo $block->getBlockHtml('formkey')?>
+        				<input type="hidden" name="create_address" value="1" />
+        				<input type="hidden" name="success_url" value="<?php /* @escapeNotVerified */ echo $block->getSuccessUrl() ?>">
+        				<input type="hidden" name="error_url" value="<?php /* @escapeNotVerified */ echo $block->getErrorUrl() ?>">
+        				
+
+        				
+                            <div class="user_info_tab col-xs-p15">
+                             <?php if(!empty($editSuccessMessage)){ echo " <p class='msg-box-green'> Your Changes have been saved.</p>"; } ?>
+                                <div class="col-lg-6 col-md-8 col-sm-12 no_pad user_info_left">
+
+                                    <h1>User Information</h1>
+                                    <div class="mandatory-indicate"><sup>*</sup>indicates a required field </div>
+                                    
+                                    
+                                    
+                                     <div class="form-group">
+                                        <label><?php echo __($fieldVal[0]) ?><sup>*</sup></label>
+                                        <input type="text" class="input-text required-entry"   maxlength="50" size="60" data-validate="{'required-firstname':true, 'validate-register-firstname-alpha':true}"  placeholder="First Name" value="<?php echo $block->escapeHtml($firstName); ?>" name="firstname" id="firstname">
+                                    	<?php if(isset($userInfoErrors)){ ?><div for="email_address" generated="true" class="mage-error" id="email_address-error"><?php echo $block->escapeHtml( $userInfoErrors );?></div> <?php } ?>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[1]) ?><sup>*</sup></label>
+                                        <input type="text" class="input-text required-entry"   data-validate="{'required-lastname':true, 'validate-register-lastname-alpha':true}"  placeholder="Last Name" maxlength="50" size="60"  value="<?php echo $block->escapeHtml($lastName); ?>" name="lastname" id="lastname">
+                                    </div>
+                                    
+                                     <div class="form-group">
+                                        <label><?php echo __($fieldVal[2]) ?></label>
+                                        <input type="text" class="form-control" placeholder="Nick Name" maxlength="30" size="60" value="<?php if(isset($nickname)){ echo $block->escapeHtml($nickname); } ?>" name="nickname" id="nickname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[3]) ?></label>
+                                        <input type="text" class="form-control" placeholder="Spouse's First Name" maxlength="50" size="60" value="<?php if(isset($sfname)){ echo $block->escapeHtml($sfname); } ?>" name="spousefirstname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[4]) ?></label>
+                                        <input type="text" class="form-control" placeholder="Spouse's Last Name" maxlength="30" size="60" value="<?php if(isset($slname)){ echo $block->escapeHtml($slname); } ?>" name="spouselastname">
+                                    </div>
+                                    
+                                    
+          							<div class="form-group">
+                						<label><?php echo __($fieldVal[5]) ?></label>
+                							<input type="text" placeholder="Address" maxlength="100" size="60" name="street[]" value="<?php if(isset($street)){ echo $block->escapeHtml($street); } ?>" title="<?php /* @escapeNotVerified */ echo __('Street Address') ?>" id="street_1" class="input-text"  />
+             						</div>
+             						
+             						<div class="form-group">
+             						<input type="text" maxlength="100" size="60" value="<?php if(isset($street2)){ echo $block->escapeHtml($street2); } ?>" id="address1" name="address1" id="edit-address1" data-drupal-selector="edit-address1" class="form-control form-text">
+             						</div>
+             						
+             						<div class="form-group user_city">
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-3 col-sm-6 zip_city">
+                                                <label class="control-label"><?php echo __($fieldVal[6]) ?><sup>*</sup></label>
+                                                <input type="text" name="postcode" maxlength="10" size="60" value="<?php if(isset($postcode)){ echo $block->escapeHtml($postcode); } ?>" title="<?php /* @escapeNotVerified */ echo __('Zip/Postal Code') ?>" id="zip" class="input-text validate-zip-international <?php /* @escapeNotVerified */ echo $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('postcode') ?>">
+                                            </div>
+
+                                            <!--<div class="col-lg-8 col-md-5 col-sm-6 zip_city">
+                                                <label class="control-label"><?php echo __($fieldVal[7]) ?></label>
+                                                <input type="text" size="60" maxlength="50" placeholder="City" name="city" value="<?php if(isset($city)){ echo $block->escapeHtml($city); } ?>" title="<?php /* @escapeNotVerified */ echo __('City') ?>"  id="city">
+                                            </div> -->
+<div class="col-lg-8 col-md-5 col-sm-6 zip_city">
+<label for="edit-city">City</label>
+<input class="form-control form-text" data-drupal-selector="edit-city" type="text" id="edit-city" name="city" value="<?php if(isset($city)){ echo $block->escapeHtml($city); } ?>" size="60" maxlength="50" placeholder="City">
+</div>
+
+<div class="form-item form-group js-form-type-select form-type-select form-item-city-dropdown" >
+<label for="edit-city-dropdown">City</label>
+<select class="form-control form-select" data-drupal-selector="edit-city-dropdown" id="edit-city-dropdown" name="city_dropdown"></select>
+</div>
+                                        </div>
+                                    </div>
+                                      <div class="form-group user_city">
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-3 col-sm-6 zip_city">
+                                                <label class="control-label"><?php echo __($fieldVal[8]) ?></label>
+													<div class="custom-select">
+                                                	<select id="region_id"  name="region_id" class="editableBox" title="<?php /* @escapeNotVerified */ echo __('State/Province') ?>" >
+                    									<option value=""><?php /* @escapeNotVerified */ echo __('please select') ?></option>
+                									</select>
+													<span class="select-arrow"><i class="fa fa-angle-down"></i></span>
+													<input class="timeTextBox1" id="timeTextBox1" name="timebox" value="Please select state" />
+													</div>
+                                            </div>
+                                            
+                                            <div class="col-lg-8 col-md-5 col-sm-6 zip_city">
+                                                <label class="control-label"><?php echo __($fieldVal[9]) ?></label>
+
+															
+								<div class="custom-select">
+								<select name="country_id" id="country" class="form-control required-entry" title="Country" data-validate="{'validate-select':true}">  
+								<?php foreach($_countries as $_country): 
+										if( $_country['value'] == 'US' || $_country['value'] == 'CA' ):
+								?>  
+									<option value="<?php echo $_country['value'] ?>" <?php if($_country['value'] == 'US') echo 'selected'; ?>><?php echo $_country['label'] ?></option>  
+								<?php endif;
+									endforeach; ?>  
+								</select> 
+								<span class="select-arrow"><i class="fa fa-angle-down"></i></span>
+								</div>
+															
+															
+														
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[10]) ?></label>
+                                        <input type="text" placeholder="Home Phone" maxlength="15" size="60" name="home_phone" class="form-control"  value="<?php if(isset($homePhone)){ echo $block->escapeHtml($homePhone); } ?>">
+                                    </div>
+                                      <div class="clearfix">
+                                   <div class="form-group">
+                                        <label><?php echo __($fieldVal[11]) ?></label>
+                                        <input type="text" placeholder="Mobile Phone" maxlength="15" size="60" name="telephone" value="<?php if(isset($MobilePhone)){ echo $block->escapeHtml($MobilePhone); } ?>" title="<?php /* @escapeNotVerified */ echo __('Phone Number') ?>"  id="telephone">
+                                    </div>
+                                    </div>                                    
+                                       
+                                    
+                            		 <div class="form-group">
+                                        <label><?php echo __($fieldVal[12]) ?><sup>*</sup></label>
+                                        <input type="email" name="email" id="email" value="<?php echo $block->escapeHtml($block->getCustomer()->getEmail()) ?>" title="<?php /* @escapeNotVerified */ echo __('Email') ?>" class="input-text" data-validate="{'required-email':true, 'validate-camping-email':true}">
+                                    </div>
+                                    
+                                    
+                                    <div class="form-group">
+                                        <a class="change-pass" href="<?php echo $block->getDefaultBaseUrl().'customer/account/edit/'; ?>">Change Password</a>
+                                    </div>
+                                    <div class="yellow-shadow">
+                                   		 <input type="submit" value="SAVE"  id="userinfo-submit" title="SAVE" />
+                                        <!--  <button type="submit"  id="userinfo-submit" title="<?php /* @escapeNotVerified */ echo __('SAVE') ?>"><span><?php /* @escapeNotVerified */ echo __('Save') ?></span></button>-->
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-4 col-sm-12 hidden-sm hidden-xs user_info_right no_pad">
+                                <ul class="acc-ads clearfix">
+									<li class="clearfix"><img class="img-responsive" src="http://online-oas.affinitygroup.com/RealMedia/ads/adstream_nx.ads/www.campingworld.com//account/profile//@Right1,Right2!Right1"></li>
+									<li class="clearfix"><img class="img-responsive" src="http://online-oas.affinitygroup.com/RealMedia/ads/adstream_nx.ads/www.campingworld.com//account/profile//@Right1,Right2!Right1"></li>
+									<li class="clearfix"><img class="img-responsive" src="http://online-oas.affinitygroup.com/RealMedia/ads/adstream_nx.ads/www.campingworld.com//account/profile//@Right1,Right2!Right1"></li>
+                               </ul>
+                                </div>
+                            </div>
+                            <!--User Info Tab Ends-->
+                            </form>
+                        </div>
+						
+			<?php echo $block->getLayout()->createBlock('Camping\Userinfo\Block\Dashboard\Rvprofile')->setTemplate('Camping_Userinfo::dashboard/rvprofile.phtml')->toHtml(); ?>
+
+					
+                       <!--communication preference tab starts-->						
+             			<?php $comPreference = $block->getEMSData(); ?>
+                        <div class="tab-pane" id="preferences">
+                            <div class="comm-preferences col-xs-p15">
+                                <h1>My Email Preferences</h1>
+                                <p>Please un-check the boxes for EMAILS that you DO NOT wish to receive. To unsubscribe from postal mail solicitations,<br/> please contact Member Services at <strong>1-866-205-7451</strong></p>
+                                <div class="panel-group" id="accordion">
+									<?php $collapse = 0; 
+										foreach ($comPreference as $catName=>$catPrefs):
+										$collapse++;
+									?>
+									<div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">                             
+                                                <label for="Camping"><?php echo $catName ?></label>
+                                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse<?php echo $collapse;?>">
+                                                    <span class="glyphicon glyphicon-plus pull-right"></span>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse<?php echo $collapse;?>" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                              <ul class="email-preferences-list clearfix">
+											        <?php foreach($catPrefs as $prefId=>$pref)  {
+														$checkFlag 	= ($pref['PreferenceValue'] == 'Y') ?'checked="checked"':'';
+														$userprefId  = $pref['UserPreferenceId'] ;
+														$lps = $pref['LastUpdateSource'] ;
+														echo "<li class='clearfix'><span>{$pref['desc']}</span><div class='checkbox' id='$prefId'>
+														<input class='editUserPref' lps='$lps'  id='$userprefId' type='checkbox' name='$prefId' $checkFlag/><label></label></div> </li>";
+													}
+													?>
+                                              </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+									<?php endforeach; ?>
+                                        
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                                                                 
+                                                    <label for="Camping">Notifications of Forum Posts</label>                                                    
+                                             
+                                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse100">
+                                                    <span class="glyphicon glyphicon-plus pull-right"></span>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse100" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                              <ul class="email-preferences-list clearfix">
+                                                    <li class="clearfix"><span>Dear Marcus </span> <div class="checkbox"><input type="checkbox" /><label></label></div> </li>
+                                                    <li class="clearfix"><span>Camping</span> <div class="checkbox"><input type="checkbox" /><label></label></div> </li>
+                                                    <li class="clearfix"><span>Technical Resources </span> <div class="checkbox"><input type="checkbox" /><label></label></div> </li>
+                                              </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+									
+									<div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                                                                 
+                                                    <label for="Camping">Notifications of Blog Posts </label>                                                    
+                                             
+                                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse200">
+                                                    <span class="glyphicon glyphicon-plus pull-right"></span>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse200" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                              <ul class="email-preferences-list clearfix">
+                                                    <li class="clearfix"><span>Notifications of Blog Posts </span> <div class="checkbox"><input type="checkbox" /><label></label></div> </li>
+                                              </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                      <!--communication preference tab starts-->		
+
+                        <div class="tab-pane tap-topspace" id="order-history">
+                           <?php echo $block->getLayout()->createBlock('Camping\Order\Block\Order')->setTemplate('Camping_Order::order.phtml')->toHtml(); ?>
+                        </div>
+
+                        <div class="tab-pane tap-topspace" id="wishlist">
+                            <?php echo $block->getLayout()->createBlock('Camping\Auth\Block\Wishlist\Customer\Wishlist')->setTemplate('Camping_Auth::wishlist/view.phtml')->toHtml(); ?>
+                        <!--  Wishlist content comes along with Camping World-->
+                        </div>
+
+                        <div class="tab-pane tap-topspace" id="favorite-rv">
+                            Favorite RV content comes along with Camping World
+                        </div>
+
+                    </div>
+                    <!--Mobile and ipad code added -->
+                     <div class="mobile-secondlevel-acc hidden-md hidden-lg" id="accordion2">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#mcollapse1">
+                                    Dashboard  <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                            </h4>
+                        </div> 
+                        
+          
+
+	<div id="mcollapse1" class="panel-collapse collapse">
+        <div class="panel-body volunter-right acc_membership_cont">
+				<div class="acc-mgt-dash">			
+						<?php			
+
+	$output = '';
+	
+	if($json != ''){
+ 
+ 	$dashboard = json_decode($json);
+
+	$benefitsurl = $baseUrl."mystuff/YourBenefits/";
+ 	/**
+ 	 * or current datetime
+ 	 */ 
+ 	$now = time(); 
+ 	$your_date   = strtotime("tomorrow", strtotime($dashboard->{'ExpireDate'}));
+ 	$datediff = $your_date - $now ;
+ 	$expiresindays =  (floor($datediff/ 86400));
+ 	
+ 	/**
+ 	 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+ 	 */
+ 	if( $expiresindays > -60 ){ 
+ 		$output .= ' <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+ 		/**
+ 		 * ABOUT TO EXPIRE
+ 		 */ 
+ 		if($expiresindays >= 0 && $expiresindays <60){ 
+ 			if($dashboard->{'BenefitLevel'} == 'Classic' || $dashboard->{'BenefitLevel'} == 'Deluxe') {
+ 				$expirydaystext = 'EXPIRES IN '. $expiresindays .' DAYS';
+ 				if($expiresindays == 0 || $expiresindays == 1) {
+ 					$expirydaystext = 'EXPIRES TODAY';
+ 				}
+ 				$output .= '<div class="dashboard-widget expires member-label">';
+ 				$output .=  '<div class="title-label">
+											<span>&nbsp;</span>
+											<div>'. $expirydaystext . '</div>
+								</div>';
+ 			} else {
+ 				$output .= '<div class="dashboard-widget expires">';
+ 			} 
+ 		}else if($expiresindays < 0 && $expiresindays >= -60){ 
+ 				
+ 			if($dashboard->{'BenefitLevel'} == 'Classic' || $dashboard->{'BenefitLevel'} == 'Deluxe'){
+ 				$renewdays = (61 + $expiresindays);
+ 				$renewdaystext = 'RENEW IN '. $renewdays .' DAYS';
+ 				if($renewdays == 1){
+ 					$renewdaystext = 'RENEW TODAY';
+ 				}
+ 				$output .= '<div class="dashboard-widget expires member-label">';
+ 				$output .=  '<div class="title-label">
+											<span>&nbsp;</span>
+											<div>'. $renewdaystext .'</div>
+										</div>';
+ 			}else{
+ 				$output .= '<div class="dashboard-widget expires">';
+ 			}
+ 
+ 			$selectplanurl =  $baseUrl . 'services'; 
+ 			$samalerturl = $renewprompturl;
+ 			$referfriendurl = $renewprompturl;
+ 			$actionlineurl = $renewprompturl;
+ 			$discountsurl = $renewprompturl;
+ 			$volunteersurl = $renewprompturl;
+ 			$printcardurl = $renewprompturl;
+ 			$fuelsavingsurl= $renewprompturl;
+ 			$benefitsurl = $renewprompturl;
+ 		} else { 
+ 			$output .='<div class="dashboard-widget">';
+ 		}
+ 
+ 		$output .='<img src="'.$widgetmembericon.'" alt="" />
+						<h3>'. $dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+ 
+						<div class="collapse" id="collapseExample">
+ 
+							<div class="members-id">
+								<p><b>'. $dashboard->{'MemberType'} .'</b></p>
+								<p><b>Membership ID#</b>'. $dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+ 			
+ 		if( $dashboard->{'IsAutoRenew'} == true){
+ 			$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+ 		}else{
+ 			$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+ 		}
+ 
+ 		$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $samalerturl .'">Sam Alert</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $actionlineurl .'">Action Line</a>
+									</p>
+ 
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $printcardurl .'">Member Card</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $discountsurl .'">Discounts</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $benefitsurl  .'">Your Benefits</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $fuelsavingsurl  .'">Fuel Savings</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $referfriendurl .'">Refer a Friend</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $volunteersurl .'">Volunteer</a>
+									</p>';
+ 			
+ 		if($dashboard->{'BenefitLevel'} == 'Classic' || $dashboard->{'BenefitLevel'} == 'Deluxe'){
+ 			$output .= '<p align="left"><a class="renew btn btn-default" href="'. $selectplanurl .'">Renew Now</a></p>';
+ 		}
+ 		$output .= '</div></div></div></div>';
+ 	} else if($expiresindays <= -60){
+ 		$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon .'" alt="" />
+						<h3>Good Sam</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample1" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+ 
+						<div class="collapse" id="collapseExample1">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>'. $dashboard->{'ClubName'} .'</b> to your Membership
+							</p>
+						</div>
+						<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($dashboard->{'ExpireDate'})) .'</sapn></p>
+								</div>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $whyjoinurl .'">Why Join</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $howitworksurl .'">How it Works</a>
+							</p>
+							<p>
+								<a class="renew btn btn-default" href="'. $selectplanurl .'">Join Now</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#add_member">Add Membership</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+ 	}
+ }else{ 
+ 	/**
+ 	 * Non-GSC Member
+ 	 */
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon .'" alt="" />
+						<h3>Good Sam</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample2" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+
+						<div class="collapse" id="collapseExample2">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>Good Sam</b> to your Membership
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $whyjoinurl .'">Why Join</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $howitworksurl .'">How it Works</a>								
+							</p>
+							<p>
+								<a class="renew btn btn-default" href="'. $selectplanurl .'">Join Now</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#add_member">Add Membership</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';			
+		}
+		
+		
+		/**
+		 * Dummy Content for Road Side Assistance Widget
+		 */
+		if($ra_json != ''){
+		
+			$ra_dashboard = json_decode($ra_json);
+			
+			//$rabenefitsurl = $helper->get_rsa_plan_detail_url($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}))!= NULL ? $helper->get_rsa_plan_detail_url($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}))->toString() : NULL;
+			$rabenefitsurl = $baseUrl."rabenefitsurl";
+			
+			$claimformurl =  $baseUrl."roadside/onlineclaimform";
+			$membercardurl =  $baseUrl."roadside/printmembership";
+			
+			/*
+			if (stripos($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}), "standard") !== false) {
+				//$renewurl = Url::fromRoute('dashboard.raselectplan',['planname'=>"auto-rv-standard"])->toString();
+				$renewurl = $baseUrl."standard";
+			}else if (stripos($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}), "platinum") !== false) {
+				//$renewurl = Url::fromRoute('dashboard.raselectplan',['planname'=>"auto-rv-platinum"])->toString();
+				$renewurl = $baseUrl."platinum";
+			}else if (stripos($helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}), "auto platinum") !== false) {
+				//$renewurl = Url::fromRoute('dashboard.raselectplan',['planname'=>"auto-platinum"])->toString();
+				$renewurl = $baseUrl."auto-platinum";
+			}
+			*/ 
+			 $renewurl = $baseUrl."rarenewurl/";
+			 
+			$now = time(); 
+			$your_date   = strtotime("tomorrow", strtotime($ra_dashboard->{'ExpireDate'}));
+			$datediff = $your_date - $now ;
+			$expiresindays =  (floor($datediff/ 86400));
+			/**
+			 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+			 */
+			if( $expiresindays > -60 ) {
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+				
+				/**
+				 * ABOUT TO EXPIRE
+				 */ 
+				if($expiresindays >= 0 && $expiresindays  <= 60)  {
+					$expirydaystext = 'EXPIRES IN '. $expiresindays .' DAYS';
+					if($expiresindays == 1 || $expiresindays == 0) {
+						$expirydaystext = 'EXPIRES TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+					    			<span>&nbsp;</span>
+				    				<div>'. $expirydaystext .'</div>
+								</div>';
+				} else if($expiresindays < 0 && $expiresindays >= -60) { 
+					/**
+					 * GRACE PERIOD
+					 */ 
+					$rabenefitsurl = $renewroadsideprompturl;
+					$claimformurl  = $renewroadsideprompturl;
+					$membercardurl = $renewroadsideprompturl;
+						
+					$renewdays = (61 + $expiresindays);
+					$renewdaystext = 'RENEW IN '. $renewdays .' DAYS';
+					if($renewdays == 1) {
+						$renewdaystext = 'RENEW TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+								 <span>&nbsp;</span>
+								 <div>'. $renewdaystext .'</div>
+								 </div>';
+				} else {
+					/**
+					 * ACTIVE
+					 */ 
+					$output .='<div class="dashboard-widget">';
+				}
+		
+				$output .='<img src="'.$widgetmembericon_ra.'" alt="" />
+						<h3>'. $ra_dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample3" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+						<div class="collapse" id="collapseExample3">
+		
+							<div class="members-id">
+								<p><b>'. $helper->get_ra_membership_mapping_title($ra_dashboard->{'MemberType'}) .'</b></p>
+								<p><b>Membership ID#</b>'. $ra_dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $ra_dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ra_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ra_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+					
+				if( $ra_dashboard->{'IsAutoRenew'} == true) {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				} else {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				}
+		
+				$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $membercardurl .'">Member Card</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $claimformurl .'">Claim Form</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $rabenefitsurl  .'">Benefits</a>
+										<a class="dash-blue-btn btn btn-default renew" href="'. $renewurl .'">Renew</a>
+									</p>';
+					
+				/* 
+				if($ra_dashboard->{'BenefitLevel'} == 'Classic' || $ra_dashboard->{'BenefitLevel'} == 'Deluxe'){
+				 		$output .= '<p align="left"><a class="renew btn btn-default" href="'. $selectplanurl .'">Renew Now</a></p>';
+				 } 
+				 */
+				$output .= '</div></div></div></div>';
+			} else if($expiresindays <= -60){
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ra .'" alt="" />
+						<h3>Good Sam Roadside Assistance Membership</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample4" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample4">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>Good Sam Roadside Assistance</b> to your Membership
+							</p>
+						</div>
+						<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ra_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ra_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ra_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+			}
+		} else{ 
+			/**
+			 * Non-RA Member
+			 */
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ra .'" alt="" />
+						<h3>Good Sam Roadside Assistance Membership</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample5" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample5">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> to add <b>Good Sam Roadside Assistance</b> to your Membership
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ra_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+		}
+		
+		
+		
+		if($ta_json != ''){
+		
+			$ta_dashboard = json_decode($ta_json);
+			$ta_membercardurl = $baseUrl."travelassist/printmembership/";
+			
+			
+			//$ta_benefitsurl = $helper->get_dashboard_ta_plan_detail_url($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}))!= NULL ? $helper->get_rsa_plan_detail_url($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'})): $baseUrl.'/under_construction';
+			$ta_benefitsurl = $baseUrl."benefitsurl/";
+			
+			/*
+			if (stripos($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}), "basic") !== false) {
+				//$ta_renewurl = Url::fromRoute('dashboard.taselectplan',['planname'=>"basic"])->toString();
+				$ta_renewurl = $baseUrl."/basic";
+			}
+			else if (stripos($helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}), "premier") !== false) {
+				//$ta_renewurl = Url::fromRoute('dashboard.taselectplan',['planname'=>"premier"])->toString();
+				$ta_renewurl = $baseUrl."/premier";
+			}
+			else{
+				$ta_renewurl = $baseUrl.'/under_construction';
+			}
+			*/
+			$ta_renewurl = $baseUrl.'tarenewurl/';
+			/**
+			 * or current datetime
+			 */ 
+			$now = time(); 
+			$your_date   = strtotime("tomorrow", strtotime($ta_dashboard->{'ExpireDate'}));
+			$tadatediff = $your_date - $now ;
+			$taexpiresindays =  (floor($tadatediff/ 86400));
+
+			/**
+			 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+			 */
+			if( $taexpiresindays > -60 )  {
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+				
+				/**
+				 * ABOUT TO EXPIRE
+				 */ 
+				if($taexpiresindays >= 0 && $taexpiresindays  <= 60)  {
+					$taexpirydaystext = 'EXPIRES IN '. $taexpiresindays .' DAYS';
+					if($taexpiresindays == 1 || $taexpiresindays == 0) {
+						$taexpirydaystext = 'EXPIRES TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+					    			<span>&nbsp;</span>
+				    				<div>'. $taexpirydaystext .'</div>
+								</div>';
+				} else if($taexpiresindays < 0 && $taexpiresindays >= -60) {
+					/**
+					 * GRACE PERIOD
+					 */ 
+					$ta_membercardurl = $renewtravelprompturl;
+					$ta_benefitsurl = $renewtravelprompturl;
+						
+					$tarenewdays = (61 + $taexpiresindays);
+					$tarenewdaystext = 'RENEW IN '. $tarenewdays .' DAYS';
+					if($tarenewdays == 1) {
+						$tarenewdaystext = 'RENEW TODAY';
+					}
+					$output .= '<div class="dashboard-widget expires member-label">';
+					$output .=  '<div class="title-label">
+								 <span>&nbsp;</span>
+								 <div>'. $tarenewdaystext .'</div>
+								 </div>';
+				} else {
+					/**
+					 * ACTIVE
+					 */
+					$output .='<div class="dashboard-widget">';
+				}
+		
+				$output .='<img src="'.$widgetmembericon_ta.'" alt="" />
+						<h3>'. $ta_dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample3" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+						<div class="collapse" id="collapseExample3">
+		
+							<div class="members-id">
+								<p><b>'. $helper->get_ta_membership_mapping_title($ta_dashboard->{'MemberType'}) .'</b></p>
+								<p><b>Membership ID#</b>'. $ta_dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $ta_dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ta_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ta_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+					
+				if( $ta_dashboard->{'IsAutoRenew'} == true) {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				} else {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				}
+		
+				$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $ta_membercardurl .'">Member Card</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $ta_benefitsurl  .'">Benefits</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default renew" href="'. $ta_renewurl .'">Renew</a>
+									</p>';
+					
+		
+				$output .= '</div></div></div></div>';
+			} else if($taexpiresindays <= -60){
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ta .'" alt="" />
+						<h3>Good Sam Travel Assistance Membership</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample4" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample4">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b>Good Sam Roadside Assistance</b> to your Membership
+							</p>
+						</div>
+						<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($ta_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($ta_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ta_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $ta_learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+			}
+		}
+		else{
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Add</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_ta .'" alt="" />
+						<h3> Travel Assist </h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample6" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample6">
+						<div class="join_add">
+							<p>
+								Please <span>join</span> again to add <b> Travel Assist </b> to your Membership
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#ta_member">Add Membership</a>
+								<a class="renew btn btn-default" href="'. $ta_learnmoreurl .'">Learn More</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $ta_joinnowurl .'">Join Now</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+		}
+		
+		
+		if($esp_json != ''){
+			$esp_dashboard = json_decode($esp_json);
+	
+			$esp_claimformurl = $baseUrl.'howespworks/'; 
+			$esp_benefitsurl = $baseUrl.'esp_coverage/';
+			 
+			/**
+			 * or current datetime
+			 */ 
+			$now = time(); 
+			$your_date   = strtotime("tomorrow", strtotime($esp_dashboard->{'ExpireDate'}));
+			$esp_datediff = $your_date - $now ;
+			$esp_expiresindays =  (floor($esp_datediff/ 86400));
+
+			/**
+			 * ACTIVE, ABOUT TO EXPIRE, GRACE PERIOD
+			 */
+			if( $esp_expiresindays > -60 )  {
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">';
+		
+				$esp_expirydaystext = 'Active';
+				$output .= '<div class="dashboard-widget expires member-label">';
+				$output .=  '<div class="title-label">
+					    			<span>&nbsp;</span>
+				    				<div>'. $esp_expirydaystext .'</div>
+								</div>';
+		
+		
+		
+				$output .='<img src="'.$widgetmembericon_esp.'" alt="" />
+						<h3>'. $esp_dashboard->{'ClubName'} .'</h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample3" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+						<div class="collapse" id="collapseExample3">
+		
+							<div class="members-id">
+								<p><b>'. $esp_dashboard->{'MemberType'} .'</b></p>
+								<p><b>Membership ID#</b>'. $esp_dashboard->{'MemberNumber'} .'</p>
+								<p><b>Membership Level:</b>'. $esp_dashboard->{'BenefitLevel'} .'</p>
+							</div>
+							<div class="expiry">
+								<div class="exp_left">
+									<p>Member Since:</p>
+									<p>Expiration Date:</p>
+								</div>
+								<div class="exp_right">
+									<p>'.date('F d, Y' , strtotime($esp_dashboard->{'MemberSince'})) .'</p>
+									<p><span>'.date('F d, Y' , strtotime($esp_dashboard->{'ExpireDate'})) .'</span></p>
+								</div>
+							</div>';
+					
+				if( $esp_dashboard->{'IsAutoRenew'} == true) {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanon">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				} else {
+					$output .= '<div class="renewal">
+								<p>Auto Renewal: <span class="spanoff">ON</span> <font>OFF</font> <img alt="gsmember" title="Lorem Ipsum Dummy content" data-toggle="tooltip" src="https://images3.campingworld.com/CampingWorld/images/V2/GS/common/question-icon.png"/></p>
+							</div>';
+				}
+		
+				$output .= '
+						        <div class="extra-fea">
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $esp_benefitsurl .'">Benefits</a>
+										<a class="dash-blue-btn btn btn-default" href="'. $esp_claimformurl .'">Claim Processing</a>
+									</p>
+									<p>
+										<a class="dash-blue-btn btn btn-default" href="'. $esp_faqurl  .'">FAQ</a>
+									</p>';
+					
+		
+				$output .= '</div></div></div></div>';
+			}
+			else if($esp_expiresindays <= -60){
+				$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Get a Quote</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_esp .'" alt="" />
+						<h3> Extended Service Plan </h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample7" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample4">
+						<div class="join_add">
+							<p>
+								Signup to Extended Service Plan Today
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="renew btn btn-default" href="'. $esp_whyjoinurl .'">Why Purchase</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#esp_member">Add Membership</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_getquoteurl .'">Get a Quote</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+			}
+		}
+		else
+		{
+			$output .= '
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-xs-p0 acc_manage_box">
+					<div class="dashboard-widget add member-label">
+						<div class="title-label">
+							<div>Get a Quote</div>
+							<span>&nbsp;</span>
+						</div>
+						<img src="'. $widgetmembericon_esp .'" alt="" />
+						<h3> Extended Service Plan </h3>
+						<a class="show-more collapsed hidden-lg hidden-md hidden-sm" href="#collapseExample7" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">
+							Show more
+							<i class="fa fa-caret-down"></i>
+							<i class="fa fa-caret-up"></i>
+						</a>
+		
+						<div class="collapse" id="collapseExample7">
+						<div class="join_add">
+							<p>
+								Signup to Extended Service Plan Today
+							</p>
+						</div>
+						<div class="extra-fea">
+							<p>
+								<a class="renew btn btn-default" href="'. $esp_whyjoinurl .'">Why Purchase</a>
+								<a class="dash-blue-btn btn btn-default" href="javascript:;" data-toggle="modal" data-target="#esp_member">Add Membership</a>
+							</p>
+							<p>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_faqurl .'">FAQ</a>
+								<a class="dash-blue-btn btn btn-default" href="'. $esp_getquoteurl .'">Get a Quote</a>
+							</p>
+						</div>
+						</div>
+					</div>
+				</div>';
+		}
+		echo $output;	
+?>
+                </div>
+         </div>
+      </div>
+     
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion2" href="#mcollapse2" class="accordion-toggle collapsed">
+                                    User Information <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                            </h4>
+                        </div>
+                        
+                 
+                       <form class="form form-edit-account" action="<?php echo $block->getUrl('customer/account/edit/'); ?>" method="post" id="tab-form-validate" enctype="multipart/form-data" data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>" autocomplete="off">
+                        <?php echo $block->getBlockHtml('formkey')?>
+        				<input type="hidden" name="create_address" value="1" />
+        				<input type="hidden" name="success_url" value="<?php  echo $block->getSuccessUrl() ?>">
+        				<input type="hidden" name="error_url" value="<?php  echo $block->getErrorUrl() ?>">
+                        
+                        <div id="mcollapse2" class="panel-collapse collapse">
+                            <div class="panel-body left-rightpad">
+                            <div class="user_info_tab col-xs-p15">
+								<?php if(!empty($editSuccessMessage)){ 
+									echo " <p class='msg-box-green'> Your Changes have been saved.</p>"; 
+								} ?>
+                                <div class="col-lg-6 col-md-8 col-sm-12 no_pad user_info_left">
+                                    <h1>User Information</h1>
+                                    <div class="mandatory-indicate"><sup>*</sup>indicates a required field </div>
+                                    
+                                   <div class="form-group">
+                                        <label><?php echo __($fieldVal[0]) ?><sup>*</sup></label>
+                                        <input type="text" class="input-text required-entry"   data-validate="{'required-firstname':true, 'validate-register-firstname-alpha':true}"  placeholder="" value="<?php echo $block->escapeHtml($firstName); ?>" name="firstname" id="firstname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[1]) ?><sup>*</sup></label>
+                                        <input type="text" class="input-text required-entry"   data-validate="{'required-lastname':true, 'validate-register-lastname-alpha':true}"  placeholder="" value="<?php echo $block->escapeHtml($lastName); ?>" name="lastname" id="lastname">
+                                    </div>
+                                    
+                                     <div class="form-group">
+                                        <label><?php echo __($fieldVal[2]) ?></label>
+                                        <input type="text" class="form-control" placeholder="Nick Name" value="<?php if(isset($nickname)){ echo $block->escapeHtml($nickname); } ?>" name="nickname" id="nickname" >
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[3]) ?></label>
+                                        <input type="text" class="form-control" placeholder="Spouse's First Name" value="<?php if(isset($sfname)){ echo $block->escapeHtml($sfname); } ?>" name="spousefirstname">
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[4]) ?></label>
+                                        <input type="text" class="form-control" placeholder="Spouse's Last Name" value="<?php if(isset($slname)){ echo $block->escapeHtml($slname); } ?>" name="spouselastname">
+                                    </div>
+
+                                   	<div class="form-group">
+                						<label><?php echo __($fieldVal[5]) ?></label>
+                							<input type="text" name="street[]" placeholder="Address" value="<?php if(isset($street)){ echo $block->escapeHtml($street); } ?>" title="<?php /* @escapeNotVerified */ echo __('Street Address') ?>" id="street_1" class="input-text"  />
+             						</div>
+             						
+             						
+             						 <div class="form-group">
+             						<input type="text" maxlength="100" size="60" value="<?php if(isset($street2)){ echo $block->escapeHtml($street2); } ?>" id="address1" name="address1" id="edit-address1" data-drupal-selector="edit-address1" class="form-control form-text">
+             						</div>
+
+									<div class="form-group user_city">
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-3 col-sm-6 zip_city">
+                                                <label class="control-label"><?php echo __($fieldVal[6]) ?><sup>*</sup></label>
+                                                <input type="text" name="postcode" value="<?php if(isset($postcode)){ echo $block->escapeHtml($postcode); } ?>" title="<?php /* @escapeNotVerified */ echo __('Zip/Postal Code') ?>" id="mzip" class="input-text validate-zip-international <?php /* @escapeNotVerified */ echo $this->helper('Magento\Customer\Helper\Address')->getAttributeValidationClass('postcode') ?>">
+                                            </div>
+
+                            
+                                            
+<div class="col-lg-8 col-md-5 col-sm-6 zip_city">
+<label for="edit-city">City</label>
+<input class="form-control form-text" data-drupal-selector="edit-city" type="text" id="medit-city" name="city" value="<?php if(isset($city)){ echo $block->escapeHtml($city); } ?>" size="60" maxlength="50" placeholder="City">
+</div>
+
+<div class="form-item form-group js-form-type-select form-type-select form-item-city-dropdown">
+<label for="edit-city-dropdown">City</label>
+<select class="form-control form-select" data-drupal-selector="edit-city-dropdown" id="medit-city-dropdown" name="city_dropdown"></select>
+</div>
+                                        </div>
+                                    </div>
+
+                                  <div class="form-group user_city">
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-3 col-sm-6 zip_city">
+                                                <label class="control-label"><?php echo __($fieldVal[8]) ?></label>
+												<div class="custom-select">
+                                                	<select id="mregion_id" class="region_id" name="region_id" title="<?php  echo __('State/Province') ?>" >
+                    									<option value=""><?php  echo __('please select') ?></option>
+                									</select>
+													<span class="select-arrow"><i class="fa fa-angle-down"></i></span>
+												</div>
+                                            </div>
+                                            
+                                            <div class="col-lg-8 col-md-5 col-sm-6 zip_city">
+                                                <label class="control-label"><?php echo __($fieldVal[9]) ?></label>
+								<div class="custom-select">
+								<select name="country_id" id="country" class="form-control required-entry" title="Country" data-validate="{'validate-select':true}">  
+								<?php foreach($_countries as $_country): 
+										if( $_country['value'] == 'US' || $_country['value'] == 'CA' ):
+								?>  
+									<option value="<?php echo $_country['value'] ?>" <?php if($_country['value'] == 'US') echo 'selected'; ?>><?php echo $_country['label'] ?></option>  
+								<?php endif;
+									endforeach; ?>  
+								</select> 
+								<span class="select-arrow"><i class="fa fa-angle-down"></i></span>
+								</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                   <div class="form-group">
+                                        <label><?php echo __($fieldVal[10]) ?></label>
+                                        <input type="text" placeholder="Home Phone" name="home_phone" class="form-control" placeholder="" value="<?php if(isset($homePhone)){ echo $block->escapeHtml($homePhone); }?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label><?php echo __($fieldVal[11]) ?></label>
+                                        <input type="text" placeholder="Mobile Phone" name="telephone" value="<?php if(isset($MobilePhone)){ echo $block->escapeHtml($MobilePhone); } ?>" title="<?php /* @escapeNotVerified */ echo __('Phone Number') ?>" class="input-text" id="telephone">
+                                    </div>
+                  
+                           			<div class="form-group">
+                                        <label><?php echo __($fieldVal[12]) ?><sup>*</sup></label>
+                                        <input type="email" name="email" id="email" value="<?php echo $block->escapeHtml($block->getCustomer()->getEmail()) ?>" title="<?php /* @escapeNotVerified */ echo __('Email') ?>" class="input-text" data-validate="{'required-email':true, 'validate-camping-email':true}">
+                                    </div>
+                                    <div class="form-group">
+                                        <a class="change-pass" href="<?php echo $block->getDefaultBaseUrl().'customer/account/edit/'; ?>">Change Password</a>
+                                    </div>
+                                    <div class="yellow-shadow msize">
+                                        <button type="submit"  title="<?php  echo __('Save') ?>"><span><?php echo __('Save') ?></span></button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-4 col-sm-12 hidden-sm hidden-xs user_info_right no_pad">
+
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </form>
+                        
+                      
+						
+			<?php echo $block->getLayout()->createBlock('Camping\Userinfo\Block\Dashboard\Rvprofile')->setTemplate('Camping_Userinfo::dashboard/tb_rvprofile.phtml')->toHtml(); ?>			
+						
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion2" href="#mcollapse4" class="accordion-toggle collapsed">
+                                    Preferences <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                            </h4>
+                        </div>
+                        <div id="mcollapse4" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="inner-accordion panel-group" id="innerAccordion">
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse1" class="accordion-toggle collapsed">
+                                                    <input type="checkbox" /> Camping World RV Sales <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                Camping World RV Sales
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse2" class="accordion-toggle collapsed">
+                                                    <input type="checkbox" /> RV Clubs <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse2" class="panel-collapse collapse">
+                                            RV Clubs
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse3" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" /> RV Emergency Assistance <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse3" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                RV Emergency Assistance
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse4" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" />  RV Events and Shows <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse4" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                RV Events and Shows
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse5" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" />  RV Publications <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse5" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                RV Publications
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse6" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" /> Camping World Accessories <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse6" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                Camping World Accessories
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse7" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" /> Banking and Financial <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse7" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                Banking and Financial
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse8" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" /> Campgrounds and RV Resorts <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse8" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                Campgrounds and RV Resorts
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse9" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" /> Life and Health <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse9" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                Life and Health
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse10" class="accordion-toggle collapsed ">
+                                                    <input type="checkbox" /> Property and Casualty <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse10" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                Property and Casualty
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#insideAccordion" href="#innerCollapse11" class="accordion-toggle">
+                                                   <input type="checkbox" /> Notification of Blog Posts <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                                            </h4>
+                                        </div>
+                                        <div id="innerCollapse11" class="panel-collapse collapse in">
+                                            <div class="panel-body">
+                                               <ul class="notification-list">
+                                                   <li><input type="checkbox" /> Daily Digest</li>
+                                                   <li><input type="checkbox" /> Weekly Digest</li>
+                                                   <li><input type="checkbox" /> Comment Notifications</li>
+                                               </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion2" href="#mcollapse5" class="accordion-toggle collapsed">
+                                    Order History <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                            </h4>
+                        </div>
+                        <div id="mcollapse5" class="panel-collapse collapse">
+                            <div class="panel-body left-rightpad">
+                                <p>Order History</p>
+                            </div>
+                        </div>
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion2" href="#mcollapse6" class="accordion-toggle collapsed">
+                                    Wish List <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                            </h4>
+                        </div>
+                        <div id="mcollapse6" class="panel-collapse collapse">
+                            <div class="panel-body left-rightpad">
+                                <p>Wish List</p>
+                            </div>
+                        </div>
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion2" href="#mcollapse7" class="accordion-toggle collapsed">
+                                    Favorite RV <span class="fa fa-minus"></span><span class="fa fa-plus"></span></a>
+                            </h4>
+                        </div>
+                        <div id="mcollapse7" class="panel-collapse collapse">
+                            <div class="panel-body left-rightpad">
+                                <p>Favorite RV</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!--dashboard tabs ends-->
+                </div>
+            </div>
+        </div> <!-- inner page end-->
+        
+<?php 
+$block->sessionCheck(); 
+if(isset($userInfoErrors)){ $block->unsuserInfoErrors(); }
+if(isset($editSuccessMessage)){ $block->unsEditSucessMessage(); } 
+?>
+
+        <div class="modal fade" id="add_member" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg add_member" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <a href="#" data-dismiss="modal" aria-label="Close">
+                        <img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/account-management/remove.png" alt="Close" title="Close" class="close_img">
+                    </a>
+                    <h1>Add Good Sam Travel Assistance Membership</h1>
+                    <h2>Please Enter Your Good Sam Travel Assistance Information</h2> <br>
+                    
+                        <input type="hidden" name="add_mem_membershiptype" id="add_mem_membershiptype" value="GoodSamClub">
+                        <div class="form-group">
+                            <label>Member ID</label>
+                            <input class="form-control form-text required"  type="text" id="add_mem_memberid" name="membershipid" value="" size="60" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input class="form-control form-text required" type="text" id="add_mem_lastname" name="lastname" value="" size="60" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Zip / Postal Code</label>
+                            <input class="form-control form-text required" type="text" id="add_mem_zipcode" name="zipcode" value="" size="60" maxlength="10">
+                        </div>
+						<div id="add_error"></div>
+                        <div class="btn-block clearfix">
+                        <div class="yellow-shadow">                            
+                            <input type="submit" id="add-form-add-membership" value="Done" title="Done"/>
+                        </div>
+                         <div class="yellow-shadow gray-shadow">                           
+                            <input type="submit" value="Cancel" title="Cancel" data-dismiss="modal" />
+                        </div>
+                      </div>
+					
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+        <div class="modal fade" id="ra_member" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg add_member" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <a href="#" data-dismiss="modal" aria-label="Close">
+                        <img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/account-management/remove.png" alt="Close" title="Close" class="close_img">
+                    </a>
+                    <h1>Add Good Sam Travel Assistance Membership</h1>
+                    <h2>Please Enter Your Good Sam Travel Assistance Information</h2> <br>
+                    
+                        <input type="hidden" name="add_mem_membershiptype" id="ra_add_mem_membershiptype" value="RoadsideAssistanceGoodSam">
+                        <div class="form-group">
+                            <label>Member ID</label>
+                            <input class="form-control form-text required"  type="text" id="ra_add_mem_memberid" name="membershipid" value="" size="60" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input class="form-control form-text required" type="text" id="ra_add_mem_lastname" name="lastname" value="" size="60" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Zip / Postal Code</label>
+                            <input class="form-control form-text required" type="text" id="ra_add_mem_zipcode" name="zipcode" value="" size="60" maxlength="10">
+                        </div>
+						<div id="ra_error"></div>
+                        <div class="btn-block clearfix">
+                        <div class="yellow-shadow">                            
+                            <input type="submit" id="ra-form-add-membership" value="Done" title="Done"/>
+                        </div>
+                         <div class="yellow-shadow gray-shadow">                           
+                            <input type="submit" value="Cancel" title="Cancel" data-dismiss="modal" />
+                        </div>
+                      </div>
+					
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="ta_member" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg add_member" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <a href="#" data-dismiss="modal" aria-label="Close">
+                        <img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/account-management/remove.png" alt="Close" title="Close" class="close_img">
+                    </a>
+                    <h1>Add Good Sam Travel Assistance Membership</h1>
+                    <h2>Please Enter Your Good Sam Travel Assistance Information</h2> <br>
+                    
+                        <input type="hidden" name="add_mem_membershiptype" id="ta_add_mem_membershiptype" value="TravelAssistGoodSam">
+                        <div class="form-group">
+                            <label>Member ID</label>
+                            <input class="form-control form-text required"  type="text" id="ta_add_mem_memberid" name="membershipid" value="" size="60" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input class="form-control form-text required" type="text" id="ta_add_mem_lastname" name="lastname" value="" size="60" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Zip / Postal Code</label>
+                            <input class="form-control form-text required" type="text" id="ta_add_mem_zipcode" name="zipcode" value="" size="60" maxlength="10">
+                        </div>
+						<div id="ta_error"></div>
+                        <div class="btn-block clearfix">
+                        <div class="yellow-shadow">                            
+                            <input type="submit" id="ta-form-add-membership" value="Done" title="Done"/>
+                        </div>
+                         <div class="yellow-shadow gray-shadow">                           
+                            <input type="submit" value="Cancel" title="Cancel" data-dismiss="modal" />
+                        </div>
+                      </div>
+					
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+        <div class="modal fade" id="esp_member" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg add_member" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <a href="#" data-dismiss="modal" aria-label="Close">
+                        <img src="https://images2.campingworld.com/CampingWorld/images/V2/CW/account-management/remove.png" alt="Close" title="Close" class="close_img">
+                    </a>
+                    <h1>Add Good Sam Travel Assistance Membership</h1>
+                    <h2>Please Enter Your Good Sam Travel Assistance Information</h2> <br>
+                    
+                        <input type="hidden" name="add_mem_membershiptype" id="esp_add_mem_membershiptype" value="ESPGoodSam">
+                        <div class="form-group">
+                            <label>Member ID</label>
+                            <input class="form-control form-text required"  type="text" id="esp_add_mem_memberid" name="membershipid" value="" size="60" maxlength="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input class="form-control form-text required" type="text" id="esp_add_mem_lastname" name="lastname" value="" size="60" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Zip / Postal Code</label>
+                            <input class="form-control form-text required" type="text" id="esp_add_mem_zipcode" name="zipcode" value="" size="60" maxlength="10">
+                        </div>
+						<div id="esp_error"></div>
+                        <div class="btn-block clearfix">
+                        <div class="yellow-shadow">                            
+                            <input type="submit" id="esp-form-add-membership" value="Done" title="Done"/>
+                        </div>
+                         <div class="yellow-shadow gray-shadow">                           
+                            <input type="submit" value="Cancel" title="Cancel" data-dismiss="modal" />
+                        </div>
+                      </div>
+					
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php if(isset($editSuccessMessage)){ $block->unsEditSucessMessage(); } ?>
+<script type="text/javascript">
+	function changeNickname($value){
+		jQuery("#nickname").val($value.text.trim());
+		jQuery("#user-edit  div").removeClass("errorclass");
+		jQuery("#respond-to-reviews-form  div").removeClass("errorclass");
+		jQuery("#nicknamevalidation").remove();
+		jQuery("#nickname-suggestions").remove();
+		jQuery("#nickname").removeClass("errorclass");
+		isnicknameValid = true;         
+	}
+     require(['jquery'],function($){
+                $(document).ready(function() {
+					
+					 $('[data-toggle="tooltip"]').tooltip(); 
+					 
+					$("#add-form-add-membership").click(function() {
+                		 raAddMembership();
+                     });
+                             
+                     function raAddMembership(){ 
+                     	var url = "<?php echo $block->getUrl(''); ?>userinfo/edit/addmember/"; 
+                     	$.ajax({
+                     		type: 'get',
+                     		url: url,
+                     		async: true,
+                     		data: { 
+                     		membershiptype : $('#add_mem_membershiptype').val(),
+							membershipid : $('#add_mem_memberid').val(),
+							lastname : $('#add_mem_lastname').val(),
+							zipcode : $('#add_mem_zipcode').val()
+							},
+                     		success: function (data) {
+								$("#add_error").text(data);
+                     			//var result = JSON.parse(data);
+                     		},
+                     		error: function (err) {
+                     			
+                     		}
+                     	});
+                     }
+					 
+					 
+					 
+					$("#ra-form-add-membership").click(function() {
+                		 raAddMembership();
+                     });
+                             
+                     function raAddMembership(){ 
+                     	var url = "<?php echo $block->getUrl(''); ?>userinfo/edit/addmember/"; 
+                     	$.ajax({
+                     		type: 'get',
+                     		url: url,
+                     		async: true,
+                     		data: { 
+                     		membershiptype : $('#ra_add_mem_membershiptype').val(),
+							membershipid : $('#ra_add_mem_memberid').val(),
+							lastname : $('#ra_add_mem_lastname').val(),
+							zipcode : $('#ra_add_mem_zipcode').val()
+							},
+                     		success: function (data) {
+								$("#ra_error").text(data);
+                     			//var result = JSON.parse(data);
+                     		},
+                     		error: function (err) {
+                     			
+                     		}
+                     	});
+                     }
+					 
+					 
+					 
+					 
+                	 $("#ta-form-add-membership").click(function() {
+                		 taAddMembership();
+                     });
+                             
+                     function taAddMembership(){ 
+                     	var url = "<?php echo $block->getUrl(''); ?>userinfo/edit/addmember/"; 
+                     	$.ajax({
+                     		type: 'get',
+                     		url: url,
+                     		async: true,
+                     		data: { 
+                     		membershiptype : $('#ta_add_mem_membershiptype').val(),
+							membershipid : $('#ta_add_mem_memberid').val(),
+							lastname : $('#ta_add_mem_lastname').val(),
+							zipcode : $('#ta_add_mem_zipcode').val()
+							},
+                     		success: function (data) {
+								$("#ta_error").text(data);
+                     			//var result = JSON.parse(data);
+                     		},
+                     		error: function (err) {
+                     			
+                     		}
+                     	});
+                     }
+					 
+					 
+					$("#esp-form-add-membership").click(function() {
+                		 espAddMembership();
+                     });
+                             
+                     function espAddMembership(){ 
+                     	var url = "<?php echo $block->getUrl(''); ?>userinfo/edit/addmember/"; 
+                     	$.ajax({
+                     		type: 'get',
+                     		url: url,
+                     		async: true,
+                     		data: { 
+                     		membershiptype : $('#esp_add_mem_membershiptype').val(),
+							membershipid : $('#esp_add_mem_memberid').val(),
+							lastname : $('#esp_add_mem_lastname').val(),
+							zipcode : $('#esp_add_mem_zipcode').val()
+							},
+                     		success: function (data) {
+								$("#esp_error").text(data);
+                     			//var result = JSON.parse(data);
+                     		},
+                     		error: function (err) {
+                     			
+                     		}
+                     	});
+                     }
+                     
+
+                   	function changeNickname($value){
+                	    $("#nickname").val($value.text.trim());
+                	    $("#user-edit  div").removeClass("errorclass");
+                	    $("#respond-to-reviews-form  div").removeClass("errorclass");
+                	    $("#nicknamevalidation").remove();
+                	    $("#nickname-suggestions").remove();
+                	    isnicknameValid = true;
+                	}
+                     
+
+                	var isnicknameValid = true;
+                    //if($('#form-validate').length >0){ 
+                        isnicknameValid = true;
+                        $("#form-validate  input#nickname").blur(function() { console.log('nickname');
+                            $("#nickname").parent().removeClass("errorclass");
+                            isnicknameValid = true;
+
+                            var token = "";
+                            var cookieArray = document.cookie.split(';');
+                            for(var i=0; i<cookieArray.length; i++){
+                                if(cookieArray[i].indexOf("__CS") > -1) {
+                                    token = cookieArray[i].split('=')[1];
+                                }
+                            }
+							
+                            $.ajax({
+                                url: '<?php echo $block->getUrl(''); ?>userinfo/edit/nickname/',
+                                type: 'get',
+                                data: {
+                                    "first_name": $('#firstname').val(),
+                                    "last_name": $('#lastname').val(),
+                                    "nick_name": $('#nickname').val(),
+                                    "token": token
+                                }, 
+                                
+                                success: function (data) { 
+                                    var result = JSON.parse(data); 
+                                    if(result['status_code'] == 200 ){
+                                        $("#nicknamevalidation").remove();
+                                        $("#nickname-suggestions").remove();
+                                        if($("#nicknameemptyvalidation").length){
+                                           $("#nickname").parent().addClass("errorclass");
+                                        }
+                                    }
+                                    else if(result['status_code'] == 400 ){
+										$("#nickname").parent().addClass("errorclass");
+                                        $("#nicknameemptyvalidation").remove();
+                                        $("#nicknamevalidation").remove();
+                                        $("#nickname-suggestions").remove();
+                                        var available = '<div class="nickname-suggestions" id="nickname-suggestions" style="display: block;">Available: <a href="javascript:void(0)" onclick="changeNickname(this)">'+result['error']['error_message']['0']+' </a><a href="javascript:void(0)" onclick="changeNickname(this)">'+result['error']['error_message']['1']+' </a><a href="javascript:void(0)" onclick="changeNickname(this)">'+result['error']['error_message']['2']+'</a></div>';
+                                        $("#nickname").after('<span id="nicknamevalidation">Someone already has that nickname. Try another?</span>'+available);
+                                        isnicknameValid = false;
+                                    }
+                                },
+                                error: function (err) {
+                                    
+                                }
+                            });
+                        });
+                    //}
+					
+
+						
+						$("#tab-form-validate  input#mzip").blur(function() {
+							zip_mchange();
+						});
+                            
+                     function zip_mchange(){
+                    	var url = "<?php echo $block->getUrl(''); ?>userinfo/edit/ajax/";
+                    	$.ajax({
+                    		type: 'get',
+                    		url: url,
+                    		async: true,
+                    		data: { zip_code : $('#mzip').val() },
+                    		success: function (data) {
+                    			var result = JSON.parse(data);
+                    			
+                    			if(result.length >1) {
+                    				$(".form-item-city").hide();
+                    				$(".form-item-city-dropdown").show();
+                    				var length = result.length;
+                    				
+                    				var newOption;
+                    				for (var j = 0; j < length; j++) {
+                    					newOption = newOption + ('<option value="' + result[j].PostalCode + '">' + result[j].City + ", " + result[j].StateAbbreviation + '</option>');
+                    				}
+                    				
+                    				newOption = newOption + ('<option value="_none" selected>' + "Select a City" + '</option>');
+                    				$('#medit-city-dropdown').empty();
+                    				$('#medit-city-dropdown').append(newOption);
+                    			}
+                    			else{ 
+                    				$("#medit-city").val(result[0]['City']);
+                    				 //var newOption = $('<option value="'+result[0].StateAbbreviation+'" selected>'+result[0].StateAbbreviation+'</option>');
+                    				 //$('#region_id').append(newOption);
+									 var state = result[0].StateAbbreviation;
+									 if(state !=null){
+										 var newOption = $('<option value="'+result[0].StateAbbreviation+'" selected>'+result[0].StateAbbreviation+'</option>');
+										 $('.region_id').append(newOption);
+									}
+                    			}
+                    		},
+                    		error: function (err) {
+                    			
+                    		}
+                    	});
+					  }
+					  
+					
+						
+						$("#form-validate  input#zip").blur(function() {
+							zip_change();
+						});
+                            
+                     function zip_change(){
+                    	var url = "<?php echo $block->getUrl(''); ?>userinfo/edit/ajax/";
+                    	$.ajax({
+                    		type: 'get',
+                    		url: url,
+                    		async: true,
+                    		data: { zip_code : $('#zip').val() },
+                    		success: function (data) {
+                    			var result = JSON.parse(data);
+                    			
+                    			if(result.length >1) {
+                    				$(".form-item-city").hide();
+                    				$(".form-item-city-dropdown").show();
+                    				var length = result.length;
+                    				
+                    				var newOption;
+                    				for (var j = 0; j < length; j++) {
+                    					newOption = newOption + ('<option value="' + result[j].PostalCode + '">' + result[j].City + ", " + result[j].StateAbbreviation + '</option>');
+                    				}
+                    				
+                    				newOption = newOption + ('<option value="_none" selected>' + "Select a City" + '</option>');
+                    				$('#edit-city-dropdown').empty();
+                    				$('#edit-city-dropdown').append(newOption);
+                    			}
+                    			else{ 
+                    				$("#edit-city").val(result[0]['City']);
+                    				 //var newOption = $('<option value="'+result[0].StateAbbreviation+'" selected>'+result[0].StateAbbreviation+'</option>');
+                    				 //$('#region_id').append(newOption);
+									 var state = result[0].StateAbbreviation;
+									 if(state !=null){
+										 var newOption = $('<option value="'+result[0].StateAbbreviation+'" selected>'+result[0].StateAbbreviation+'</option>');
+										 $('#region_id').append(newOption);
+									}
+                    			}
+                    		},
+                    		error: function (err) {
+                    			
+                    		}
+                    	});
+					  }
+					
+                    
+                	function prodList(classname,indexmodule) {
+                	    var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+                	    $('.' + classname).css('clear', 'none');
+                	    if (width > 768) {
+                	        if (indexmodule == undefined) {
+                	            indexmodule = 4;
+                	        }
+                	        $('.' + classname).each(function (index, item) {
+                	            if ((index + parseInt(indexmodule)) % parseInt(indexmodule) == 0) {
+                	                $(item).css('clear', 'both');
+                	            }
+                	        });
+                	    }
+                	    else {
+                	        if (indexmodule == undefined) {
+                	            indexmodule = 3;
+                	        }
+                	        $('.' + classname).each(function (index, item) {
+                	            if ((index + parseInt(indexmodule)) % parseInt(indexmodule) == 0) {
+                	                $(item).css('clear', 'both');
+                	            }
+                	        });
+                	    }
+                	}
+
+        $(".show-more").click(function(){
+            var actionvalue = $(this).attr('aria-expanded');
+            if(actionvalue=="false")
+            {
+                $(this).html('Show less <i class="fa fa-caret-down"></i><i class="fa fa-caret-up"></i>');
+            }
+            else{
+                $(this).html('Show more <i class="fa fa-caret-down"></i><i class="fa fa-caret-up"></i>');
+            }
+        });
+        $( '#myTab a' ).click( function ( e ) {
+            e.preventDefault();
+            $( this ).tab( 'show' );
+        } );
+        $( '#moreTabs a' ).click( function ( e ) {
+            e.preventDefault();
+            $( this ).tab( 'show' );
+        } );
+        ( function( $ ) {
+            fakewaffle.responsiveTabs( [ 'xs', 'sm' ] );
+        } )( jQuery );
+
+        $('.collapse').on('shown.bs.collapse', function(){
+            $(this).parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
+        }).on('hidden.bs.collapse', function(){
+            $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+        });
+		
+        $(document).ready(function () {
+            if ($(window).width() < 768) {
+                prodList('acc_manage_box', 1);
+            }
+            else if ($(window).width() == 768) {
+                prodList('acc_manage_box', 2);
+            }else {
+                prodList('acc_manage_box', 4);
+            }
+        });
+        $(window).resize(function () {
+            if ($(window).width() < 768) {
+                prodList('acc_manage_box', 1);
+            }
+            else if ($(window).width() == 768) {
+                prodList('acc_manage_box', 2);
+            }else {
+                prodList('acc_manage_box', 4);
+            }
+        });
+        
+    });
+ });     
+</script>
+
+<script>
+	
+	require([
+         'jquery',
+         'mage/mage'
+     ], function($){
+
+         var dataForm = $('#rvform-validate');
+         var ignore = null;
+         
+         dataForm.mage('validation', {
+                 ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+             }).find('input:text').attr('autocomplete', 'off');
+
+     });
+
+require([
+         'jquery',
+         'mage/mage'
+     ], function($){
+
+         var dataForm = $('#mb-rvform-validate');
+         var ignore = null;
+         
+         dataForm.mage('validation', {
+                 ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+             }).find('input:text').attr('autocomplete', 'off');
+
+     });
+
+
+    require(['jquery'],function($){
+        $(document).ready(function() {
+                    
+        // Auto  suggest for state Desktop
+		$(".editableBox").change(function () {
+			$(".timeTextBox1").val($(".editableBox option:selected").html());
+		});		
+		
+		$("#country").change(function () {
+			$(".timeTextBox1").val("Please select state");
+		});	
+		
+		 $(function() {
+		 var availableTutorials = [
+		  "Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "Armed Forces Africa", "Armed Forces Americas", "Armed Forces Canada", "Armed Forces Europe", "Armed Forces Middle East", "Armed Forces Pacific", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Federated States Of Micronesia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Marshall Islands", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oklahoma", "Oregon", "Palau", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virgin Islands", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "Alberta", "British Columbia", "Manitoba", "Newfoundland and Labrador", "New Brunswick", "Nova Scotia", "Northwest Territories", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon Territory",
+         ];
+            $( "#timeTextBox1" ).autocomplete({
+               source: availableTutorials,
+			    minLength: 3
+            });
+		});	
+		
+			$('#country option[value="<?php echo $coun;?>"]').attr("selected", "selected");
+            $('.region_id option[value="<?php echo $regionId;?>"]').attr("selected", "selected");
+    		$("#userinfo-submit").click(function(){  
+        	var exist = $( "#region_id" ).hasClass( "required-entry" ); 
+        	if ( exist ) { 
+        		$("#region_id").removeClass("required-entry");
+        	}    	
+    		});
+			$('#zip').keypress(function (e) {
+				var key = e.which;
+				if(key == 13){					
+					return false;
+				}
+			});
+		});
+		
+// rvprofile //
+$('#rvyear').on('change', function() {
+var startyear = $(this).val();
+$('#rvdate').empty();
+$('#rvmdate').append($('<option />'));
+for (i = new Date().getFullYear()+1; i >= startyear; i--){ 
+    $('#rvdate').append($('<option />').val(i).html(i));
+	}
+});
+
+//mobile//
+$('#rvmyear').on('change', function() {
+var mstartyear = $(this).val();
+$('#rvmdate').empty();
+$('#rvmdate').append($('<option />'));
+for (i = new Date().getFullYear()+1; i >= mstartyear; i--)
+{
+    $('#rvmdate').append($('<option />').val(i).html(i));
+}
+});
+
+//$('.combobox').combobox();
+// rvprofile //
+}); 
+	
+    require(['jquery'],function($){
+        $(document).ready(function() {
+    		$("#userinfo-submit").click(function(){  
+        	var exist = $( "#region_id" ).hasClass( "required-entry" ); 
+        	if ( exist ) { 
+        		$("#region_id").removeClass("required-entry");
+        	}    	
+    		});
+			
+			
+        });
+    });   
+</script>
+<?php if(isset($flagVal)){ ?>
+<script>
+    require(['jquery'],function($){
+        $(document).ready(function() {
+			jQuery('#myTab li').removeClass('active');
+			jQuery('.tab-pane').removeClass('active');
+			<?php if($flagVal == 'order'){ ?> 
+			jQuery('#myTab li:eq( 4 )').addClass('active');
+			jQuery('#order-history').addClass('active');
+			<?php } 
+			elseif($flagVal == 'userinfo'){?>
+			jQuery('#myTab li:eq( 1 )').addClass('active');
+			jQuery('#user-info').addClass('active');
+			<?php } 
+			elseif($flagVal == 'rvprofile'){
+			?>
+			jQuery('#myTab li:eq( 2 )').addClass('active');
+			jQuery('#rv-profile').addClass('active');
+		<?php }else{ ?>
+			jQuery('#myTab li:eq( 0 )').addClass('active');
+			jQuery('#dashboard').addClass('active');
+		<?php }?>
+		});
+    });   
+</script>
+<?php } ?>
+<script type="text/x-magento-init">
+    {
+        "#form-validate": {
+            "validation": {}
+        },
+        "#country": {
+            "regionUpdater": {
+                "optionalRegionAllowed": <?php /* @escapeNotVerified */ echo($block->getConfig('general/region/display_all') ? 'true' : 'false'); ?>,
+                "regionListId": "#region_id",
+                "regionInputId": "#region",
+                "postcodeId": "#zip",
+                "form": "#form-validate",
+                "regionJson": <?php /* @escapeNotVerified */ echo $this->helper('Magento\Directory\Helper\Data')->getRegionJson() ?>,
+                "defaultRegion": "<?php /* @escapeNotVerified */   if($regionId){ echo $regionId; }else{ echo 0; }; ?>",
+                "countriesWithOptionalZip": <?php /* @escapeNotVerified */ echo $this->helper('Magento\Directory\Helper\Data')->getCountriesWithOptionalZip(true) ?>
+            }
+        }
+    }
+</script>	
+<script type="text/x-magento-init">	
+	    {
+        "#tab-form-validate": {
+            "validation": {}
+        },
+        "#mcountry": {
+            "regionUpdater": {
+                "optionalRegionAllowed": <?php /* @escapeNotVerified */ echo($block->getConfig('general/region/display_all') ? 'true' : 'false'); ?>,
+                "regionListId": "#mregion_id",
+                "regionInputId": "#region",
+                "postcodeId": "#mzip",
+                "form": "#tab-form-validate",
+                "regionJson": <?php /* @escapeNotVerified */ echo $this->helper('Magento\Directory\Helper\Data')->getRegionJson() ?>,
+                "defaultRegion": "<?php /* @escapeNotVerified */   if($regionId){ echo $regionId; }else{ echo 0; }; ?>",
+                "countriesWithOptionalZip": <?php /* @escapeNotVerified */ echo $this->helper('Magento\Directory\Helper\Data')->getCountriesWithOptionalZip(true) ?>
+            }
+        }
+    }
+</script>
+<script type="text/javascript">
+
+	jQuery('.editUserPref').change(function() {
+		var UserPreferenceId 	= jQuery(this).attr('id');
+		var PreferenceId 		= jQuery(this).attr('name');
+		var LastUpdateSource	= jQuery(this).attr('lps');
+		var PreferenceValue 	= 'N';
+		
+        
+		if(jQuery(this).is(":checked")) {
+            PreferenceValue = 'Y'
+        }
+		
+		
+		if(UserPreferenceId) {
+			var url	 = '<?php echo $this->getUrl('campingauth/commpref/updatepref');?>';
+			var data = {"UserPreferenceId":UserPreferenceId,"PreferenceValue":PreferenceValue,'Source':'Camping World','LastUpdateSource':LastUpdateSource};
+			jQuery.ajax({
+				type: "POST",
+				url: url,
+				data: data,
+				success: function(res){
+				  var result = jQuery.parseJSON(res);
+				  if(result.status =='fail'){
+						alert(result.message);
+				  }
+				}  
+			});
+		} else{
+			var url	 = '<?php echo $this->getUrl('campingauth/commpref/insertpref');?>';
+			var data = {"PreferenceId":PreferenceId,"PreferenceValue":PreferenceValue,'Source':'Camping World'};
+			jQuery.ajax({
+				type: "POST",
+				url: url,
+				data: data,
+				success: function(res){
+				  var result = jQuery.parseJSON(res);
+				  if(result.status =='success'){
+						//alert(result.st);
+						jQuery("input[name='"+result.id+"']").attr('id',result.upid);
+						jQuery("input[name='"+result.id+"']").attr('lps',result.lps);
+				  }
+				}
+			});
+		}
+    });
+</script>
+
+<?php //$block->unsMenuFlag(); ?>
+<!-- script for displaying wishlist -->
+<!-- used ajax call to bring wishlist items to current page -->
+<!--<script>
+	require(['jquery', 'jquery/ui'], function($) {
+		$('#wishlist').click(function () {
+				$.ajax({url: "<?php /*echo $this->getUrl('mywishlist'); */?>", success: function(result){
+					$("#wishlist").html(result);
+				}});
+			}
+
+		);
+	});
+</script>-->

@@ -1,0 +1,135 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$Helper = $objectManager->get('Camping\Auth\Helper\Data');
+$error = $Helper->setChangePasswordError();
+?>
+<form class="form form-edit-account" action="<?php /* @escapeNotVerified */ echo $block->getUrl('customer/account/editPost') ?>" method="post" id="form-validate" enctype="multipart/form-data" data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>" autocomplete="off">
+
+    <fieldset class="fieldset info">
+        <?php echo $block->getBlockHtml('formkey');
+        		
+        ?>
+        <input type="hidden" name="change_password" id="change-password" value="1" title="<?php /* @escapeNotVerified */ echo __('Change Password') ?>"<?php if ($block->getChangePassword()): ?> checked="checked"<?php endif; ?> class="checkbox"/>
+    </fieldset>
+
+       <div class="container home-page">
+        <div class="content_inner">
+            <div class="successCnt col-lg-10 col-lg-offset-1 col-md-10 hidden-lg  hidden-md  hidden-sm  hidden-xs">
+                <span class="errorDesk">Success! <br> Your new Password has been created successfully</span>
+            </div>
+            
+            <div class="reset_password">
+                <h1>Create a Password</h1>
+                <div class="form-group">
+                    <label><?php echo __('New Password') ?></label>
+                    <input type="password" class="input-text change-password-fields" name="password" id="password" data-validate="{'required-password':true, 'validate-reg-password':true, 'validate-register-password':true }" autocomplete="off" maxlength="20"  placeholder="Enter new password">
+                	<?php if(isset($error)){ ?><div for="password" generated="true" class="mage-error" id="password-error"><?php echo $block->escapeHtml( $error );?></div> <?php } ?>
+                </div>
+                <div class="form-group">
+                    <label><?php echo __('Confirm New Password') ?></label>
+                    <input type="password" class="input-text change-password-fields" name="password_confirmation" id="password-confirmation" data-validate="{'required-password':true, 'validate-reg-password':true, 'validate-register-password':true, equalTo:'#password' }" autocomplete="off" placeholder="Re-enter new password" maxlength="20">
+                </div>
+                <div class="checkbox">                   
+                        <input type="checkbox" id="check"> <label> Show password </label>                   
+                </div>
+                <div class="form-group text-center yellow-shadow">
+                    <input type="submit" title="<?php /* @escapeNotVerified */ echo __('CHANGE PASSWORD') ?>" value="CHANGE PASSWORD"/>
+                    <!-- <button type="submit" title="<?php /* @escapeNotVerified */ echo __('CHANGE PASSWORD') ?>"><?php echo __('CHANGE PASSWORD'); ?></button> -->
+                </div>
+                <!--reset_password ends-->
+            </div>
+            
+        </div>
+    </div>
+
+</form>
+<?php if(isset($error)){ $Helper->sessionCheck(); } ?>
+<script>
+require([
+         "jquery",
+         "mage/mage"
+     ], function($){
+         var dataForm = $('#form-validate');
+         var ignore = null;
+         
+         dataForm.mage('validation', {
+                     ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+                 });
+
+     });
+
+
+(function ($) {
+    $.toggleShowPassword = function (options) {
+        var settings = $.extend({
+            field: "#password",
+            control: "#toggle_show_password",
+        }, options);
+
+        var control = $(settings.control);
+        var field = $(settings.field)
+
+        control.bind('click', function () {
+            if (control.is(':checked')) {
+                field.attr('type', 'text');
+            } else {
+                field.attr('type', 'password');
+            }
+        })
+    };
+
+    $.toggleShowPassword({
+        field: '.change-password-fields',
+        control: '#check'
+    });
+
+
+    
+}(jQuery));
+
+//Here how to call above plugin from everywhere in your application document body
+
+
+</script>
+
+<script type="text/x-magento-init">
+    {
+        "#change-password": {
+            "setPassword": {
+				"currentPasswordId": "#current-password",
+				"passwordId": "#password",
+                "confirmationId": "#password-confirmation",
+                "passwordContainer": "fieldset.fieldset.password",
+                "showOnDefault": <?php /* @escapeNotVerified */ echo $block->getChangePassword() ? 'true' : 'false' ?>
+            }
+        }
+    }
+</script>
+<script>
+require(['jquery'],function($){
+    $(document).ready(function(e){			
+        $('#form-validate').submit(function(e){ 
+            if (!$('#form-validate').valid()) {
+                   var password = $('#password').val();
+                   var passwordConfirmation = $('#password-confirmation').val();
+                   if(password !== passwordConfirmation){
+                       setTimeout(passwordNotMatchValidatons, 0);
+                   }
+                   return false;
+            }
+        });
+    });
+});
+</script>
+<script>
+function passwordNotMatchValidatons(){
+    jQuery('#password-confirmation-error').html('Passwords do not match');
+}
+</script>

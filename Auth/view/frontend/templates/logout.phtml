@@ -1,0 +1,24 @@
+<?php
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+	/*
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$session = $objectManager->get('Magento\Checkout\Model\Session');
+	$session->clearQuote();
+	*/
+?>
+
+<script>
+require([
+	"jquery",
+	"mage/mage"
+], function($){
+	 $('[data-block="minicart"]').replaceWith('0');
+     $('[data-block="minicart"]').trigger('contentUpdated');
+   	$($.mage.redirect("<?php /* @escapeNotVerified */ echo $block->getUrl() ?>", "assign", 0000));
+
+});	
+
+</script>
