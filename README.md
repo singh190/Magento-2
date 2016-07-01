@@ -10,3 +10,4 @@ use command: <br/>
 6> Install sample data: magento sample data:reset. <br/>
 7> Clear static content: bin/magento setup:static-content:deploy <br/>
 8> Db setup upgrade: bin/magento setup:db-schema:upgrade <br/>
+9> Enable developer mode: bin/magento deploy:mode:set developer
