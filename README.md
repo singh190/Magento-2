@@ -11,3 +11,4 @@ use command: <br/>
 7> Clear static content: bin/magento setup:static-content:deploy <br/>
 8> Db setup upgrade: bin/magento setup:db-schema:upgrade <br/>
 9> Enable developer mode: bin/magento deploy:mode:set developer
+10> Clear static content: bin/magento --clear-static-content
