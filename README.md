@@ -12,4 +12,5 @@ check for module status: php bin/magento module:status.<br/>
 7> Clear static content: bin/magento setup:static-content:deploy <br/>
 8> Db setup upgrade: bin/magento setup:db-schema:upgrade <br/>
 9> Enable developer mode: bin/magento deploy:mode:set developer<br/>
-10> Clear static content and enable module: bin/magento --clear-static-content
+10> Clear static content and enable module: bin/magento --clear-static-content.<br/>
+11> Uninstall and delete module: php bin/magento module:uninstall
