@@ -13,4 +13,5 @@ check for module status: php bin/magento module:status.<br/>
 8> Db setup upgrade: bin/magento setup:db-schema:upgrade <br/>
 9> Enable developer mode: bin/magento deploy:mode:set developer<br/>
 10> Clear static content and enable module: bin/magento --clear-static-content.<br/>
-11> Uninstall and delete module: php bin/magento module:uninstall
+11> Uninstall and delete module: php bin/magento module:uninstall.<br/>
+12> php -d memory_limit=2G bin/magento setup:static-content:deploy
