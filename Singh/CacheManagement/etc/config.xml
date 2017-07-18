@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2017 CORRA. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <cache_management>
+            <log_config>
+                <enable_debug_log>0</enable_debug_log>
+                <enable_report_log>0</enable_report_log>
+                <enable_system_log>0</enable_system_log>
+            </log_config>
+        </cache_management>
+    </default>
+</config>
