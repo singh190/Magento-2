@@ -18,3 +18,14 @@ check for module status: php bin/magento module:status.<br/>
 php bin/magento admin:user:create --admin-user="admin" --admin-firstname="Abhi" --admin-lastname="Singh" --admin-email="email@address" --admin-password="admin@123"
 13> To process CSS/SASS file
 php magento dev:source-theme:deploy --type less css/styles-l --locale="en_US" --area="frontend" --theme="Magento/blank"
+<br/>
+Issue:<br/>
+A)Install Magento the Integrator way.<br/>
+B)Copy a working env.php to app/etc/<br/>
+C)Import an working database dump into mysql.<br/>
+D)Open the Site in the Browser/run setup upgrade<br/>
+Result: <br/>
+Exception #0 (BadMethodCallException): Missing required argument $routerList of Magento\Framework\App\RouterList.<br/>
+Solution: <br/>
+bin/magento module:enable --all<br/>
+bin/magento setup:di:compile<br/>
