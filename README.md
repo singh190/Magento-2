@@ -15,7 +15,7 @@ check for module status: php bin/magento module:status.<br/>
 10> Clear static content and enable module: bin/magento --clear-static-content.<br/>
 11> Uninstall and delete module: php bin/magento module:uninstall.<br/>
 12> php -d memory_limit=2G bin/magento setup:static-content:deploy .<br/>
-php bin/magento admin:user:create --admin-user="admin" --admin-firstname="Abhi" --admin-lastname="Singh" --admin-email="email@address" --admin-password="admin@123"
+php bin/magento admin:user:create --admin-user="admin" --admin-firstname="Abhi" --admin-lastname="Singh" --admin-email="email@address" --admin-password="admin@123" .<br/>
 13> To process CSS/SASS file
 php magento dev:source-theme:deploy --type less css/styles-l --locale="en_US" --area="frontend" --theme="Magento/blank"
 <br/>
