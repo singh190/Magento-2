@@ -13,7 +13,7 @@ namespace Magento\Customer\Api;
  */
 interface AddressMetadataInterface extends MetadataInterface
 {
-    const ATTRIBUTE_SET_ID_ADDRESS = 2;
+    const ATTRIBUTE_SET_ID_ADDRESS = 16;
 
     const ENTITY_TYPE_ADDRESS = 'customer_address';
 
