@@ -29,3 +29,5 @@ Exception #0 (BadMethodCallException): Missing required argument $routerList of 
 Solution: <br/>
 bin/magento module:enable --all<br/>
 bin/magento setup:di:compile<br/>
+Area code not set:
+<br>bin/magento app:config:import</br>
